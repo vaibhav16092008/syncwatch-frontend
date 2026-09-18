@@ -3,6 +3,8 @@
  * Source of truth: syncwatch-backend/docs/API.md
  */
 
+import { PublicRoomState, RoomUser } from "./api";
+
 export interface SocketAckSuccess<T = Record<string, unknown>> {
   success: true;
   data: T;
@@ -24,7 +26,7 @@ export type SocketAckCallback<T = Record<string, unknown>> = (response: SocketAc
 // Connection status
 export type SocketConnectionState = "disconnected" | "connecting" | "connected" | "error";
 
-// Event payload contracts established for future phases
+// Event payload contracts
 export interface RoomJoinPayload {
   roomId: string;
   displayName: string;
@@ -34,6 +36,16 @@ export interface RoomReconnectPayload {
   roomId: string;
   userId: string;
   reconnectToken: string;
+}
+
+export interface RoomJoinAckData {
+  user: RoomUser;
+  room: PublicRoomState;
+}
+
+export interface RoomReconnectAckData {
+  user: RoomUser;
+  room: PublicRoomState;
 }
 
 export interface ChatSendPayload {
