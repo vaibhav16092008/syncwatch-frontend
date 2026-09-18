@@ -84,6 +84,13 @@ export interface PublicRoomInfo {
   userCount: number;
 }
 
+// REST Request Payloads
+export interface CreateRoomRequest {
+  name: string;
+  mode: RoomMode;
+  displayName: string;
+}
+
 // REST Response Payloads
 export interface CreateRoomResponseData {
   room: RoomDetails;
