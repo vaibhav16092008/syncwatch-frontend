@@ -3,7 +3,7 @@
 import React, { use, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ShieldAlert, ArrowLeft, RefreshCw, KeyRound, Lock, Info } from "lucide-react";
+import { ArrowLeft, KeyRound, Lock, Info } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -12,9 +12,12 @@ import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { RoomHeader } from "@/components/room/RoomHeader";
 import { PresenceRoster } from "@/components/room/PresenceRoster";
 import { WatchSurfacePlaceholder } from "@/components/room/WatchSurfacePlaceholder";
+import { YouTubePlayerView } from "@/components/room/YouTubePlayerView";
+import { MediaControls } from "@/components/room/MediaControls";
 import { useSession } from "@/hooks/useSession";
 import { useSocket } from "@/hooks/useSocket";
 import {
+  MediaState,
   PresenceUser,
   PublicRoomState,
   RoomUser,
@@ -39,12 +42,16 @@ export default function RoomPage({ params }: RoomPageProps) {
   const { session, setSession, clearSession } = useSession();
   const { connect, socket, connectionState } = useSocket();
 
-  // Room & Presence State
+  // Room, Presence & Media State
   const [roomState, setRoomState] = useState<PublicRoomState | null>(null);
   const [presenceUsers, setPresenceUsers] = useState<(PresenceUser | RoomUser)[]>([]);
+  const [mediaState, setMediaState] = useState<MediaState | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
   const [roomError, setRoomError] = useState<{ code?: string; message: string } | null>(null);
   const [isLeaving, setIsLeaving] = useState(false);
+
+  // Getter for current player position
+  const getTimeRef = useRef<(() => number) | null>(null);
 
   // Guard against duplicate emits on single mount
   const hasEmittedRef = useRef(false);
@@ -52,6 +59,13 @@ export default function RoomPage({ params }: RoomPageProps) {
   // Validate session matches route roomId
   const isSessionValid = Boolean(
     session && session.roomId && session.roomId.trim().toUpperCase() === roomIdFromRoute
+  );
+
+  // Determine host role
+  const isHost = Boolean(
+    session?.role === "host" ||
+    (roomState?.hostId && session?.userId && roomState.hostId === session.userId) ||
+    roomState?.users?.some((u) => (u.userId === session?.userId || u.id === session?.userId) && u.role === "host")
   );
 
   // 1. Leave Room handler
@@ -112,6 +126,7 @@ export default function RoomPage({ params }: RoomPageProps) {
               });
               setRoomState(room);
               if (room.users) setPresenceUsers(room.users);
+              if (room.media) setMediaState(room.media);
               setIsInitializing(false);
             } else {
               setRoomError({
@@ -143,6 +158,7 @@ export default function RoomPage({ params }: RoomPageProps) {
               });
               setRoomState(room);
               if (room.users) setPresenceUsers(room.users);
+              if (room.media) setMediaState(room.media);
               setIsInitializing(false);
             } else {
               setRoomError({
@@ -172,6 +188,13 @@ export default function RoomPage({ params }: RoomPageProps) {
       if (updatedRoom.users) {
         setPresenceUsers(updatedRoom.users);
       }
+      if (updatedRoom.media) {
+        setMediaState(updatedRoom.media);
+      }
+    };
+
+    const handleMediaState = (updatedMediaState: MediaState) => {
+      setMediaState(updatedMediaState);
     };
 
     const handlePresenceState = (data: { users: PresenceUser[] }) => {
@@ -203,6 +226,7 @@ export default function RoomPage({ params }: RoomPageProps) {
     };
 
     activeSocket.on("room:state", handleRoomState);
+    activeSocket.on("media:state", handleMediaState);
     activeSocket.on("presence:state", handlePresenceState);
     activeSocket.on("room:user-joined", handleUserJoined);
     activeSocket.on("room:user-left", handleUserLeft);
@@ -210,11 +234,78 @@ export default function RoomPage({ params }: RoomPageProps) {
     // Cleanup listeners on unmount
     return () => {
       activeSocket.off("room:state", handleRoomState);
+      activeSocket.off("media:state", handleMediaState);
       activeSocket.off("presence:state", handlePresenceState);
       activeSocket.off("room:user-joined", handleUserJoined);
       activeSocket.off("room:user-left", handleUserLeft);
     };
   }, [isSessionValid, roomIdFromRoute, session, connect, setSession]);
+
+  // 4. Host Control Handlers
+  const handleGetCurrentTimeRef = useCallback((getTimeFn: () => number) => {
+    getTimeRef.current = getTimeFn;
+  }, []);
+
+  const handleLocalPlay = useCallback(
+    (position: number) => {
+      if (isHost && socket?.connected) {
+        socket.emit("media:play", { position });
+      }
+    },
+    [isHost, socket]
+  );
+
+  const handleLocalPause = useCallback(
+    (position: number) => {
+      if (isHost && socket?.connected) {
+        socket.emit("media:pause", { position });
+      }
+    },
+    [isHost, socket]
+  );
+
+  const handleSetMedia = useCallback(
+    (mediaId: string) => {
+      if (isHost && socket?.connected) {
+        socket.emit("media:set", { type: "youtube", mediaId });
+      }
+    },
+    [isHost, socket]
+  );
+
+  const handleControlsPlay = useCallback(() => {
+    const currentPos = getTimeRef.current ? getTimeRef.current() : mediaState?.position || 0;
+    handleLocalPlay(currentPos);
+  }, [handleLocalPlay, mediaState]);
+
+  const handleControlsPause = useCallback(() => {
+    const currentPos = getTimeRef.current ? getTimeRef.current() : mediaState?.position || 0;
+    handleLocalPause(currentPos);
+  }, [handleLocalPause, mediaState]);
+
+  const handleSeek = useCallback(
+    (position: number) => {
+      if (isHost && socket?.connected) {
+        socket.emit("media:seek", { position });
+      }
+    },
+    [isHost, socket]
+  );
+
+  const handleRate = useCallback(
+    (playbackRate: number) => {
+      if (isHost && socket?.connected) {
+        socket.emit("media:rate", { playbackRate });
+      }
+    },
+    [isHost, socket]
+  );
+
+  const handleClearMedia = useCallback(() => {
+    if (isHost && socket?.connected) {
+      socket.emit("media:clear", {});
+    }
+  }, [isHost, socket]);
 
   // Render Case 1: Unauthorized Session / Direct Navigation without Session
   if (!isSessionValid) {
@@ -323,9 +414,31 @@ export default function RoomPage({ params }: RoomPageProps) {
         <div className="grid lg:grid-cols-3 gap-6 items-start">
           {/* Main Watch Area Viewport (Cols 2) */}
           <div className="lg:col-span-2 space-y-4">
-            <WatchSurfacePlaceholder
-              roomName={roomState?.name}
-              mode={roomState?.mode}
+            {mediaState?.source?.mediaId ? (
+              <YouTubePlayerView
+                mediaState={mediaState}
+                isHost={isHost}
+                onLocalPlay={handleLocalPlay}
+                onLocalPause={handleLocalPause}
+                onGetCurrentTimeRef={handleGetCurrentTimeRef}
+              />
+            ) : (
+              <WatchSurfacePlaceholder
+                roomName={roomState?.name}
+                mode={roomState?.mode}
+              />
+            )}
+
+            {/* Host / Member Media Controls */}
+            <MediaControls
+              mediaState={mediaState}
+              isHost={isHost}
+              onSetMedia={handleSetMedia}
+              onPlay={handleControlsPlay}
+              onPause={handleControlsPause}
+              onSeek={handleSeek}
+              onRate={handleRate}
+              onClearMedia={handleClearMedia}
             />
 
             {/* Room Info Summary Bar */}
@@ -363,3 +476,4 @@ export default function RoomPage({ params }: RoomPageProps) {
     </div>
   );
 }
+

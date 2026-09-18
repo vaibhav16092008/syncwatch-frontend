@@ -3,6 +3,7 @@ import {
   ApiResponse,
   CreateRoomRequest,
   CreateRoomResponseData,
+  GetMediaStateResponseData,
   GetRoomInfoResponseData,
 } from "@/types/api";
 
@@ -25,4 +26,15 @@ export async function getRoomInfo(
 ): Promise<ApiResponse<GetRoomInfoResponseData>> {
   const normalizedCode = roomId.trim().toUpperCase();
   return apiGet<GetRoomInfoResponseData>(`/rooms/${encodeURIComponent(normalizedCode)}`);
+}
+
+/**
+ * Fetches current media playback state for a room.
+ * GET /api/rooms/:roomId/media
+ */
+export async function getMediaState(
+  roomId: string
+): Promise<ApiResponse<GetMediaStateResponseData>> {
+  const normalizedCode = roomId.trim().toUpperCase();
+  return apiGet<GetMediaStateResponseData>(`/rooms/${encodeURIComponent(normalizedCode)}/media`);
 }
