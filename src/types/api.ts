@@ -68,6 +68,24 @@ export interface PresenceUser {
   connected: boolean;
 }
 
+export interface ChatMessage {
+  id: string;
+  roomId: string;
+  userId: string;
+  displayName: string;
+  message: string;
+  createdAt: number;
+}
+
+export interface ReactionEvent {
+  id: string;
+  roomId: string;
+  userId: string;
+  displayName: string;
+  emoji: string;
+  createdAt: number;
+}
+
 export interface PublicRoomState {
   id: string;
   roomId: string;
