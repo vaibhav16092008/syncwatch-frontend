@@ -14,14 +14,14 @@ interface SessionProviderProps {
 export const SessionProvider: React.FC<SessionProviderProps> = ({ children }) => {
   const [session, setSessionState] = useState<ActiveSession | null>(null);
 
-  // Restore session from sessionStorage on initial client mount if present
+  // Restore session from sessionStorage on initial client mount if valid
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
         const stored = sessionStorage.getItem(SESSION_STORAGE_KEY);
         if (stored) {
           const parsed = JSON.parse(stored) as ActiveSession;
-          if (parsed && parsed.userId && parsed.reconnectToken && parsed.roomId) {
+          if (parsed && parsed.roomId && parsed.displayName) {
             setSessionState(parsed);
           }
         }
@@ -50,7 +50,7 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({ children }) =>
     session,
     setSession,
     clearSession,
-    isAuthenticated: Boolean(session && session.userId && session.reconnectToken),
+    isAuthenticated: Boolean(session && session.roomId && session.displayName),
   };
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;

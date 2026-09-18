@@ -6,11 +6,11 @@
 import { UserRole } from "./api";
 
 export interface ActiveSession {
-  userId: string;
-  reconnectToken: string;
   roomId: string;
   displayName: string;
-  role: UserRole;
+  userId?: string;
+  reconnectToken?: string;
+  role?: UserRole;
   joinedAt?: number;
 }
 
