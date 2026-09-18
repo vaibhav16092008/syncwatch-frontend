@@ -3,7 +3,7 @@
  * Source of truth: syncwatch-backend/docs/API.md
  */
 
-import { PublicRoomState, RoomUser } from "./api";
+import { ChatMessage, PublicRoomState, ReactionEvent, RoomUser } from "./api";
 
 export interface SocketAckSuccess<T = Record<string, unknown>> {
   success: true;
@@ -52,8 +52,16 @@ export interface ChatSendPayload {
   message: string;
 }
 
+export interface ChatSendAckData {
+  message: ChatMessage;
+}
+
 export interface ReactionSendPayload {
   emoji: string;
+}
+
+export interface ReactionSendAckData {
+  reaction: ReactionEvent;
 }
 
 export interface MediaSetPayload {

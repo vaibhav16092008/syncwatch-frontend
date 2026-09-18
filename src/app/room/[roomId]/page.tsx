@@ -14,15 +14,21 @@ import { PresenceRoster } from "@/components/room/PresenceRoster";
 import { WatchSurfacePlaceholder } from "@/components/room/WatchSurfacePlaceholder";
 import { YouTubePlayerView } from "@/components/room/YouTubePlayerView";
 import { MediaControls } from "@/components/room/MediaControls";
+import { ReactionBar, AllowedEmoji } from "@/components/room/ReactionBar";
+import { ReactionOverlay, FloatingReaction } from "@/components/room/ReactionOverlay";
+import { ChatPanel } from "@/components/room/ChatPanel";
 import { useSession } from "@/hooks/useSession";
 import { useSocket } from "@/hooks/useSocket";
 import {
+  ChatMessage,
   MediaState,
   PresenceUser,
   PublicRoomState,
+  ReactionEvent,
   RoomUser,
 } from "@/types/api";
 import {
+  ChatSendAckData,
   RoomJoinAckData,
   RoomReconnectAckData,
   SocketAck,
@@ -42,10 +48,15 @@ export default function RoomPage({ params }: RoomPageProps) {
   const { session, setSession, clearSession } = useSession();
   const { connect, socket, connectionState } = useSocket();
 
-  // Room, Presence & Media State
+  // Room, Presence, Media, Chat & Reaction State
   const [roomState, setRoomState] = useState<PublicRoomState | null>(null);
   const [presenceUsers, setPresenceUsers] = useState<(PresenceUser | RoomUser)[]>([]);
   const [mediaState, setMediaState] = useState<MediaState | null>(null);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [reactions, setReactions] = useState<FloatingReaction[]>([]);
+  const [isSendingChat, setIsSendingChat] = useState(false);
+  const [chatSendError, setChatSendError] = useState<string | null>(null);
+
   const [isInitializing, setIsInitializing] = useState(true);
   const [roomError, setRoomError] = useState<{ code?: string; message: string } | null>(null);
   const [isLeaving, setIsLeaving] = useState(false);
@@ -225,11 +236,47 @@ export default function RoomPage({ params }: RoomPageProps) {
       }
     };
 
+    const handleChatHistory = (data: { messages: ChatMessage[] }) => {
+      if (Array.isArray(data?.messages)) {
+        setChatMessages((prev) => {
+          const existingIds = new Set(prev.map((m) => m.id));
+          const newMsgs = data.messages.filter((m) => !existingIds.has(m.id));
+          return [...prev, ...newMsgs].sort((a, b) => a.createdAt - b.createdAt);
+        });
+      }
+    };
+
+    const handleChatMessage = (msg: ChatMessage) => {
+      if (msg && msg.id) {
+        setChatMessages((prev) => {
+          if (prev.some((m) => m.id === msg.id)) {
+            return prev;
+          }
+          return [...prev, msg];
+        });
+      }
+    };
+
+    const handleReactionEvent = (reaction: ReactionEvent) => {
+      if (reaction && reaction.emoji) {
+        const keyId = `${reaction.id || Date.now()}-${Math.random()}`;
+        const floating: FloatingReaction = { ...reaction, keyId };
+        setReactions((prev) => [...prev, floating]);
+
+        setTimeout(() => {
+          setReactions((prev) => prev.filter((r) => r.keyId !== keyId));
+        }, 3000);
+      }
+    };
+
     activeSocket.on("room:state", handleRoomState);
     activeSocket.on("media:state", handleMediaState);
     activeSocket.on("presence:state", handlePresenceState);
     activeSocket.on("room:user-joined", handleUserJoined);
     activeSocket.on("room:user-left", handleUserLeft);
+    activeSocket.on("chat:history", handleChatHistory);
+    activeSocket.on("chat:message", handleChatMessage);
+    activeSocket.on("reaction:event", handleReactionEvent);
 
     // Cleanup listeners on unmount
     return () => {
@@ -238,10 +285,13 @@ export default function RoomPage({ params }: RoomPageProps) {
       activeSocket.off("presence:state", handlePresenceState);
       activeSocket.off("room:user-joined", handleUserJoined);
       activeSocket.off("room:user-left", handleUserLeft);
+      activeSocket.off("chat:history", handleChatHistory);
+      activeSocket.off("chat:message", handleChatMessage);
+      activeSocket.off("reaction:event", handleReactionEvent);
     };
   }, [isSessionValid, roomIdFromRoute, session, connect, setSession]);
 
-  // 4. Host Control Handlers
+  // 4. Host Media Control Handlers
   const handleGetCurrentTimeRef = useCallback((getTimeFn: () => number) => {
     getTimeRef.current = getTimeFn;
   }, []);
@@ -306,6 +356,50 @@ export default function RoomPage({ params }: RoomPageProps) {
       socket.emit("media:clear", {});
     }
   }, [isHost, socket]);
+
+  // 5. Chat & Reaction Handlers
+  const handleSendMessage = useCallback(
+    (message: string): Promise<boolean> => {
+      return new Promise((resolve) => {
+        if (!socket || !socket.connected) {
+          setChatSendError("Socket disconnected. Unable to send.");
+          resolve(false);
+          return;
+        }
+
+        setIsSendingChat(true);
+        setChatSendError(null);
+
+        socket.emit(
+          "chat:send",
+          { message },
+          (response: SocketAck<ChatSendAckData>) => {
+            setIsSendingChat(false);
+            if (response.success) {
+              resolve(true);
+            } else {
+              setChatSendError(response.error.message || "Failed to send message.");
+              resolve(false);
+            }
+          }
+        );
+      });
+    },
+    [socket]
+  );
+
+  const handleSendReaction = useCallback(
+    (emoji: AllowedEmoji) => {
+      if (socket && socket.connected) {
+        socket.emit("reaction:send", { emoji }, (response?: SocketAck) => {
+          if (response && !response.success) {
+            console.warn("Reaction send error:", response.error.message);
+          }
+        });
+      }
+    },
+    [socket]
+  );
 
   // Render Case 1: Unauthorized Session / Direct Navigation without Session
   if (!isSessionValid) {
@@ -412,8 +506,11 @@ export default function RoomPage({ params }: RoomPageProps) {
       {/* Main Room Layout Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 pb-8">
         <div className="grid lg:grid-cols-3 gap-6 items-start">
-          {/* Main Watch Area Viewport (Cols 2) */}
-          <div className="lg:col-span-2 space-y-4">
+          {/* Main Watch Area Viewport & Controls (Cols 2) */}
+          <div className="lg:col-span-2 space-y-4 relative">
+            {/* Ephemeral Reaction Animation Overlay */}
+            <ReactionOverlay reactions={reactions} />
+
             {mediaState?.source?.mediaId ? (
               <YouTubePlayerView
                 mediaState={mediaState}
@@ -441,6 +538,9 @@ export default function RoomPage({ params }: RoomPageProps) {
               onClearMedia={handleClearMedia}
             />
 
+            {/* Reaction Bar */}
+            <ReactionBar onSendReaction={handleSendReaction} />
+
             {/* Room Info Summary Bar */}
             <Card className="p-4 border-slate-800 bg-slate-900/80 flex flex-wrap items-center justify-between gap-4 text-xs">
               <div className="flex items-center gap-2">
@@ -462,8 +562,16 @@ export default function RoomPage({ params }: RoomPageProps) {
             </Card>
           </div>
 
-          {/* Side Panel: Live Presence Roster (Col 1) */}
-          <div className="space-y-4">
+          {/* Side Panel: Live Presence Roster & Chat (Col 1) */}
+          <div className="space-y-6">
+            <ChatPanel
+              messages={chatMessages}
+              currentUserId={session?.userId}
+              onSendMessage={handleSendMessage}
+              isSending={isSendingChat}
+              sendError={chatSendError}
+            />
+
             <PresenceRoster
               users={presenceUsers}
               currentUserId={session?.userId}
@@ -476,4 +584,5 @@ export default function RoomPage({ params }: RoomPageProps) {
     </div>
   );
 }
+
 
