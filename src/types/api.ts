@@ -59,19 +59,30 @@ export interface MediaState {
   version: number;
 }
 
-export interface RoomDetails {
+export interface PresenceUser {
+  id: string;
+  userId: string;
+  displayName: string;
+  role: UserRole;
+  joinedAt: number;
+  connected: boolean;
+}
+
+export interface PublicRoomState {
   id: string;
   roomId: string;
   name: string;
   mode: RoomMode;
   locked: boolean;
   maxUsers: number;
-  hostId?: string | null;
-  users?: RoomUser[];
+  hostId: string | null;
+  users: RoomUser[];
   userCount: number;
   media?: MediaState;
   emptySince?: number | null;
 }
+
+export interface RoomDetails extends PublicRoomState {}
 
 // Public Room Info (returned by GET /api/rooms/:roomId)
 export interface PublicRoomInfo {
