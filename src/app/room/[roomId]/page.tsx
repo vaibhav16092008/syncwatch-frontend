@@ -20,6 +20,7 @@ import { ChatPanel } from "@/components/room/ChatPanel";
 import { LocalMediaControls } from "@/components/room/LocalMediaControls";
 import { LocalVideoPreview } from "@/components/room/LocalVideoPreview";
 import { RemoteMediaGrid } from "@/components/room/RemoteMediaGrid";
+import { ConnectionStatus } from "@/components/room/ConnectionStatus";
 import { FileShareWidget } from "@/components/room/FileShareWidget";
 import { useSession } from "@/hooks/useSession";
 import { useSocket } from "@/hooks/useSocket";
@@ -51,7 +52,7 @@ export default function RoomPage({ params }: RoomPageProps) {
 
   const router = useRouter();
   const { session, setSession, clearSession } = useSession();
-  const { connect, socket, connectionState } = useSocket();
+  const { connect, reconnect, socket, connectionState } = useSocket();
 
   // Validate session matches route roomId
   const isSessionValid = Boolean(
@@ -89,11 +90,16 @@ export default function RoomPage({ params }: RoomPageProps) {
   const [roomError, setRoomError] = useState<{ code?: string; message: string } | null>(null);
   const [isLeaving, setIsLeaving] = useState(false);
 
+  // Reconnection UX state
+  const [isRecovering, setIsRecovering] = useState(false);
+  const [recoveryError, setRecoveryError] = useState<string | null>(null);
+
   // Getter for current player position
   const getTimeRef = useRef<(() => number) | null>(null);
 
-  // Guard against duplicate emits on single mount
-  const hasEmittedRef = useRef(false);
+  // Guard against duplicate emits on single mount vs transport reconnect
+  const isBoundRef = useRef(false);
+  const isMountedRef = useRef(true);
 
   // Determine host role
   const isHost = Boolean(
@@ -123,8 +129,16 @@ export default function RoomPage({ params }: RoomPageProps) {
     }
   }, [socket, clearSession, router]);
 
+  // Manual reconnect trigger
+  const handleManualRetry = useCallback(() => {
+    setRecoveryError(null);
+    reconnect();
+  }, [reconnect]);
+
   // 2. Room Binding & Event Listener Lifecycle Effect
   useEffect(() => {
+    isMountedRef.current = true;
+
     if (!isSessionValid) {
       setIsInitializing(false);
       return;
@@ -133,10 +147,62 @@ export default function RoomPage({ params }: RoomPageProps) {
     // Connect socket lazily when entering room
     const activeSocket = connect();
 
-    // Perform room:reconnect or room:join per API.md contract
-    const performRoomBinding = () => {
-      if (hasEmittedRef.current) return;
-      hasEmittedRef.current = true;
+    // Rebind room on transport reconnect
+    const doRebind = () => {
+      if (!isMountedRef.current || !session?.userId || !session?.reconnectToken) return;
+
+      setIsRecovering(true);
+      setRecoveryError(null);
+
+      activeSocket.emit(
+        "room:reconnect",
+        {
+          roomId: roomIdFromRoute,
+          userId: session.userId,
+          reconnectToken: session.reconnectToken,
+        },
+        (response: SocketAck<RoomReconnectAckData>) => {
+          if (!isMountedRef.current) return;
+          setIsRecovering(false);
+
+          if (response.success) {
+            const { user, room } = response.data;
+            setSession({
+              userId: user.userId,
+              reconnectToken: user.reconnectToken,
+              roomId: room.roomId || room.id,
+              displayName: user.displayName,
+              role: user.role,
+              joinedAt: user.joinedAt,
+            });
+            setRoomState(room);
+            if (room.users) setPresenceUsers(room.users);
+            if (room.media) setMediaState(room.media);
+          } else {
+            const errCode = response.error.code;
+            if (
+              errCode === "SESSION_EXPIRED" ||
+              errCode === "INVALID_RECONNECT_TOKEN" ||
+              errCode === "ROOM_NOT_FOUND" ||
+              errCode === "INVALID_ROOM_CODE"
+            ) {
+              clearSession();
+              setRoomError({
+                code: errCode,
+                message: response.error.message || "Room session expired or room no longer exists.",
+              });
+            } else {
+              setRecoveryError(response.error.message || "Failed to recover room state.");
+            }
+          }
+        }
+      );
+    };
+
+    // Perform initial room:reconnect or room:join per API.md contract
+    const doInitialBinding = () => {
+      if (isBoundRef.current || !isMountedRef.current) return;
+      isBoundRef.current = true;
 
       if (session?.userId && session?.reconnectToken) {
         // Reconnect flow
@@ -148,6 +214,7 @@ export default function RoomPage({ params }: RoomPageProps) {
             reconnectToken: session.reconnectToken,
           },
           (response: SocketAck<RoomReconnectAckData>) => {
+            if (!isMountedRef.current) return;
             if (response.success) {
               const { user, room } = response.data;
               setSession({
@@ -163,8 +230,17 @@ export default function RoomPage({ params }: RoomPageProps) {
               if (room.media) setMediaState(room.media);
               setIsInitializing(false);
             } else {
+              const errCode = response.error.code;
+              if (
+                errCode === "SESSION_EXPIRED" ||
+                errCode === "INVALID_RECONNECT_TOKEN" ||
+                errCode === "ROOM_NOT_FOUND" ||
+                errCode === "INVALID_ROOM_CODE"
+              ) {
+                clearSession();
+              }
               setRoomError({
-                code: response.error.code,
+                code: errCode,
                 message: response.error.message || "Failed to reconnect to room.",
               });
               setIsInitializing(false);
@@ -180,6 +256,7 @@ export default function RoomPage({ params }: RoomPageProps) {
             displayName: session.displayName,
           },
           (response: SocketAck<RoomJoinAckData>) => {
+            if (!isMountedRef.current) return;
             if (response.success) {
               const { user, room } = response.data;
               setSession({
@@ -208,13 +285,18 @@ export default function RoomPage({ params }: RoomPageProps) {
       }
     };
 
+    const handleConnect = () => {
+      if (!isBoundRef.current) {
+        doInitialBinding();
+      } else {
+        doRebind();
+      }
+    };
+
     if (activeSocket.connected) {
-      performRoomBinding();
-    } else {
-      activeSocket.once("connect", () => {
-        performRoomBinding();
-      });
+      handleConnect();
     }
+    activeSocket.on("connect", handleConnect);
 
     // 3. Register Server Broadcast Listeners
     const handleRoomState = (updatedRoom: PublicRoomState) => {
@@ -303,6 +385,8 @@ export default function RoomPage({ params }: RoomPageProps) {
 
     // Cleanup listeners on unmount
     return () => {
+      isMountedRef.current = false;
+      activeSocket.off("connect", handleConnect);
       activeSocket.off("room:state", handleRoomState);
       activeSocket.off("media:state", handleMediaState);
       activeSocket.off("presence:state", handlePresenceState);
@@ -312,7 +396,7 @@ export default function RoomPage({ params }: RoomPageProps) {
       activeSocket.off("chat:message", handleChatMessage);
       activeSocket.off("reaction:event", handleReactionEvent);
     };
-  }, [isSessionValid, roomIdFromRoute, session, connect, setSession]);
+  }, [isSessionValid, roomIdFromRoute, session, connect, setSession, clearSession]);
 
   // 4. Host Media Control Handlers
   const handleGetCurrentTimeRef = useCallback((getTimeFn: () => number) => {
@@ -528,6 +612,14 @@ export default function RoomPage({ params }: RoomPageProps) {
 
       {/* Main Room Layout Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 pb-8">
+        {/* Connection Status Banner for Reconnection UX */}
+        <ConnectionStatus
+          connectionState={connectionState}
+          isRecovering={isRecovering}
+          onManualRetry={handleManualRetry}
+          recoveryError={recoveryError}
+        />
+
         <div className="grid lg:grid-cols-3 gap-6 items-start">
           {/* Main Watch Area Viewport & Controls (Cols 2) */}
           <div className="lg:col-span-2 space-y-4 relative">

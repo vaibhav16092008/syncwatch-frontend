@@ -69,18 +69,44 @@ class SocketManager {
         this.updateState("connected");
       });
 
-      this.socket.on("disconnect", () => {
-        this.updateState("disconnected");
+      this.socket.on("disconnect", (reason) => {
+        if (reason === "io client disconnect") {
+          this.updateState("disconnected");
+        } else {
+          this.updateState("reconnecting");
+        }
       });
 
       this.socket.on("connect_error", () => {
-        this.updateState("error");
+        if (this.state !== "reconnecting") {
+          this.updateState("error");
+        }
+      });
+
+      this.socket.io.on("reconnect_attempt", () => {
+        this.updateState("reconnecting");
+      });
+
+      this.socket.io.on("reconnect_failed", () => {
+        this.updateState("failed");
       });
     }
 
     this.updateState("connecting");
     this.socket.connect();
     return this.socket;
+  }
+
+  /**
+   * Triggers a manual reconnect attempt using the single existing socket instance
+   */
+  public reconnect(): Socket {
+    if (this.socket) {
+      this.updateState("reconnecting");
+      this.socket.connect();
+      return this.socket;
+    }
+    return this.connect();
   }
 
   /**

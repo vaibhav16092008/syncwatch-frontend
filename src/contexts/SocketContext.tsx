@@ -10,7 +10,9 @@ export interface SocketContextType {
   connectionState: SocketConnectionState;
   isConnected: boolean;
   isConnecting: boolean;
+  isReconnecting: boolean;
   connect: () => Socket;
+  reconnect: () => Socket;
   disconnect: () => void;
 }
 
@@ -43,6 +45,13 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     return instance;
   }, []);
 
+  // Manual reconnect trigger
+  const reconnect = useCallback(() => {
+    const instance = socketManager.reconnect();
+    setSocket(instance);
+    return instance;
+  }, []);
+
   // Disconnect trigger
   const disconnect = useCallback(() => {
     socketManager.disconnect();
@@ -54,7 +63,9 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     connectionState,
     isConnected: connectionState === "connected",
     isConnecting: connectionState === "connecting",
+    isReconnecting: connectionState === "reconnecting",
     connect,
+    reconnect,
     disconnect,
   };
 
