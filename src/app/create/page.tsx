@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/Badge";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { useSession } from "@/hooks/useSession";
 import { createRoom } from "@/services/api/roomService";
+import { formatErrorMessage } from "@/utils/errors";
 import { RoomMode } from "@/types/api";
 
 export default function CreateRoomPage() {
@@ -55,7 +56,7 @@ export default function CreateRoomPage() {
     e.preventDefault();
     setErrorMessage(null);
 
-    if (!validateForm()) {
+    if (isSubmitting || !validateForm()) {
       return;
     }
 
@@ -85,11 +86,10 @@ export default function CreateRoomPage() {
         const targetRoomId = room.roomId || room.id;
         router.push(`/room/${targetRoomId}`);
       } else {
-        setErrorMessage(response.error?.message || "Failed to create room. Please try again.");
+        setErrorMessage(formatErrorMessage(response, "Failed to create room. Please try again."));
       }
     } catch (err) {
-      console.error("Room creation error:", err);
-      setErrorMessage("An unexpected error occurred while communicating with the server.");
+      setErrorMessage(formatErrorMessage(err, "An unexpected error occurred while creating the room."));
     } finally {
       setIsSubmitting(false);
     }

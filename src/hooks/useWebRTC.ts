@@ -259,12 +259,26 @@ export function useWebRTC({
           });
         }
       } catch (err: unknown) {
-        console.warn("getUserMedia error:", err);
         setPermissionStatus("denied");
-        const errMsg =
-          err instanceof Error
-            ? err.message
-            : "Permission denied or media device unavailable.";
+        let errMsg = "Permission denied or media device unavailable.";
+
+        if (err instanceof DOMException || err instanceof Error) {
+          const name = err.name;
+          if (name === "NotAllowedError" || name === "PermissionDeniedError") {
+            errMsg = "Camera/microphone access was denied. Please allow access in browser settings.";
+          } else if (name === "NotFoundError" || name === "DevicesNotFoundError") {
+            errMsg = "No camera or microphone device was found on your system.";
+          } else if (name === "NotReadableError" || name === "TrackStartError") {
+            errMsg = "Camera or microphone is currently in use by another application.";
+          } else if (name === "OverconstrainedError") {
+            errMsg = "Media device does not satisfy requested constraints.";
+          } else if (name === "SecurityError") {
+            errMsg = "Camera/microphone access requires a secure HTTPS connection or localhost.";
+          } else if (err.message && err.message.length < 150) {
+            errMsg = err.message;
+          }
+        }
+
         setError(errMsg);
       }
     },

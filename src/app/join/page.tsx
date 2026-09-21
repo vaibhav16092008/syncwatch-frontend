@@ -12,6 +12,8 @@ import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { useSession } from "@/hooks/useSession";
 import { getRoomInfo } from "@/services/api/roomService";
 
+import { formatErrorMessage } from "@/utils/errors";
+
 const ROOM_CODE_REGEX = /^SYNC-[A-Z0-9]{5}$/i;
 
 export default function JoinRoomPage() {
@@ -55,7 +57,7 @@ export default function JoinRoomPage() {
     e.preventDefault();
     setErrorMessage(null);
 
-    if (!validateForm()) {
+    if (isSubmitting || !validateForm()) {
       return;
     }
 
@@ -90,12 +92,11 @@ export default function JoinRoomPage() {
         router.push(`/room/${targetRoomId}`);
       } else {
         setErrorMessage(
-          response.error?.message || "Room not found. Please check your room code and try again."
+          formatErrorMessage(response, "Room not found. Please check your room code and try again.")
         );
       }
     } catch (err) {
-      console.error("Join room error:", err);
-      setErrorMessage("An unexpected error occurred while verifying the room code.");
+      setErrorMessage(formatErrorMessage(err, "An unexpected error occurred while verifying the room code."));
     } finally {
       setIsSubmitting(false);
     }
