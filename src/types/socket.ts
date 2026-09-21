@@ -3,7 +3,14 @@
  * Source of truth: syncwatch-backend/docs/API.md
  */
 
-import { ChatMessage, PublicRoomState, ReactionEvent, RoomUser } from "./api";
+import {
+  ChatMessage,
+  PublicRoomState,
+  ReactionEvent,
+  RoomUser,
+  WebRTCFileMetadata,
+  WebRTCReadyPeer,
+} from "./api";
 
 export interface SocketAckSuccess<T = Record<string, unknown>> {
   success: true;
@@ -76,3 +83,74 @@ export interface MediaSeekPayload {
 export interface MediaRatePayload {
   playbackRate: number;
 }
+
+// WebRTC Signaling Event & Ack Payloads
+export interface WebRTCPeerReadyAckData {
+  readyPeers: WebRTCReadyPeer[];
+}
+
+export interface WebRTCOfferPayload {
+  targetUserId: string;
+  sdp: {
+    type: "offer";
+    sdp: string;
+  };
+}
+
+export interface WebRTCAnswerPayload {
+  targetUserId: string;
+  sdp: {
+    type: "answer";
+    sdp: string;
+  };
+}
+
+export interface WebRTCICECandidatePayload {
+  targetUserId: string;
+  candidate: {
+    candidate: string;
+    sdpMid?: string;
+    sdpMLineIndex?: number;
+  };
+}
+
+export interface WebRTCOfferEvent {
+  senderUserId: string;
+  senderDisplayName: string;
+  sdp: {
+    type: "offer";
+    sdp: string;
+  };
+}
+
+export interface WebRTCAnswerEvent {
+  senderUserId: string;
+  senderDisplayName: string;
+  sdp: {
+    type: "answer";
+    sdp: string;
+  };
+}
+
+export interface WebRTCICECandidateEvent {
+  senderUserId: string;
+  candidate: {
+    candidate: string;
+    sdpMid?: string;
+    sdpMLineIndex?: number;
+  };
+}
+
+export interface WebRTCFileMetadataPayload {
+  targetUserId?: string;
+  fileId?: string;
+  name: string;
+  size: number;
+  mimeType: string;
+}
+
+export interface WebRTCFileMetadataAckData {
+  fileId: string;
+  metadata: WebRTCFileMetadata;
+}
+

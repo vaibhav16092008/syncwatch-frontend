@@ -86,6 +86,23 @@ export interface ReactionEvent {
   createdAt: number;
 }
 
+export interface WebRTCReadyPeer {
+  userId: string;
+  displayName: string;
+  socketId: string;
+  ready: boolean;
+  updatedAt: number;
+}
+
+export interface WebRTCFileMetadata {
+  fileId: string;
+  senderUserId: string;
+  senderDisplayName: string;
+  name: string;
+  size: number;
+  mimeType: string;
+}
+
 export interface PublicRoomState {
   id: string;
   roomId: string;
