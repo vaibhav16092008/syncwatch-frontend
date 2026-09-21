@@ -17,8 +17,13 @@ import { MediaControls } from "@/components/room/MediaControls";
 import { ReactionBar, AllowedEmoji } from "@/components/room/ReactionBar";
 import { ReactionOverlay, FloatingReaction } from "@/components/room/ReactionOverlay";
 import { ChatPanel } from "@/components/room/ChatPanel";
+import { LocalMediaControls } from "@/components/room/LocalMediaControls";
+import { LocalVideoPreview } from "@/components/room/LocalVideoPreview";
+import { RemoteMediaGrid } from "@/components/room/RemoteMediaGrid";
+import { FileShareWidget } from "@/components/room/FileShareWidget";
 import { useSession } from "@/hooks/useSession";
 import { useSocket } from "@/hooks/useSocket";
+import { useWebRTC } from "@/hooks/useWebRTC";
 import {
   ChatMessage,
   MediaState,
@@ -48,6 +53,29 @@ export default function RoomPage({ params }: RoomPageProps) {
   const { session, setSession, clearSession } = useSession();
   const { connect, socket, connectionState } = useSocket();
 
+  // Validate session matches route roomId
+  const isSessionValid = Boolean(
+    session && session.roomId && session.roomId.trim().toUpperCase() === roomIdFromRoute
+  );
+
+  // WebRTC Hook
+  const {
+    permissionStatus: webrtcPermissionStatus,
+    isCameraOn: isWebRTCCameraOn,
+    isMicOn: isWebRTCMicOn,
+    localStream: webrtcLocalStream,
+    remotePeers: webrtcRemotePeers,
+    receivedFiles: webrtcReceivedFiles,
+    error: webrtcError,
+    toggleLocalMedia,
+    shareFileMetadata,
+  } = useWebRTC({
+    socket,
+    currentUserId: session?.userId,
+    currentDisplayName: session?.displayName,
+    isEnabled: isSessionValid,
+  });
+
   // Room, Presence, Media, Chat & Reaction State
   const [roomState, setRoomState] = useState<PublicRoomState | null>(null);
   const [presenceUsers, setPresenceUsers] = useState<(PresenceUser | RoomUser)[]>([]);
@@ -66,11 +94,6 @@ export default function RoomPage({ params }: RoomPageProps) {
 
   // Guard against duplicate emits on single mount
   const hasEmittedRef = useRef(false);
-
-  // Validate session matches route roomId
-  const isSessionValid = Boolean(
-    session && session.roomId && session.roomId.trim().toUpperCase() === roomIdFromRoute
-  );
 
   // Determine host role
   const isHost = Boolean(
@@ -511,6 +534,16 @@ export default function RoomPage({ params }: RoomPageProps) {
             {/* Ephemeral Reaction Animation Overlay */}
             <ReactionOverlay reactions={reactions} />
 
+            {/* Local Camera Floating PiP Preview */}
+            <div className="absolute top-3 right-3 z-20">
+              <LocalVideoPreview
+                stream={webrtcLocalStream}
+                displayName={session?.displayName}
+                isCameraOn={isWebRTCCameraOn}
+                isMicOn={isWebRTCMicOn}
+              />
+            </div>
+
             {mediaState?.source?.mediaId ? (
               <YouTubePlayerView
                 mediaState={mediaState}
@@ -526,6 +559,9 @@ export default function RoomPage({ params }: RoomPageProps) {
               />
             )}
 
+            {/* Remote WebRTC Video Streams Grid */}
+            <RemoteMediaGrid peers={webrtcRemotePeers} />
+
             {/* Host / Member Media Controls */}
             <MediaControls
               mediaState={mediaState}
@@ -538,8 +574,24 @@ export default function RoomPage({ params }: RoomPageProps) {
               onClearMedia={handleClearMedia}
             />
 
+            {/* Local WebRTC Camera & Mic Controls */}
+            <LocalMediaControls
+              isCameraOn={isWebRTCCameraOn}
+              isMicOn={isWebRTCMicOn}
+              permissionStatus={webrtcPermissionStatus}
+              error={webrtcError}
+              onToggleCamera={() => toggleLocalMedia(!isWebRTCCameraOn, isWebRTCMicOn)}
+              onToggleMic={() => toggleLocalMedia(isWebRTCCameraOn, !isWebRTCMicOn)}
+            />
+
             {/* Reaction Bar */}
             <ReactionBar onSendReaction={handleSendReaction} />
+
+            {/* File Sharing Offer Metadata Widget */}
+            <FileShareWidget
+              onShareFile={(name, size, mimeType) => shareFileMetadata(name, size, mimeType)}
+              receivedFiles={webrtcReceivedFiles}
+            />
 
             {/* Room Info Summary Bar */}
             <Card className="p-4 border-slate-800 bg-slate-900/80 flex flex-wrap items-center justify-between gap-4 text-xs">
@@ -584,5 +636,6 @@ export default function RoomPage({ params }: RoomPageProps) {
     </div>
   );
 }
+
 
 
