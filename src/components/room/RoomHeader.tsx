@@ -26,8 +26,10 @@ export const RoomHeader: React.FC<RoomHeaderProps> = ({
       case "connected":
         return "success";
       case "connecting":
+      case "reconnecting":
         return "warning";
       case "error":
+      case "failed":
         return "error";
       default:
         return "neutral";
@@ -115,9 +117,9 @@ export const RoomHeader: React.FC<RoomHeaderProps> = ({
               className={`w-1.5 h-1.5 rounded-full ${
                 connectionState === "connected"
                   ? "bg-emerald-400"
-                  : connectionState === "connecting"
+                  : connectionState === "connecting" || connectionState === "reconnecting"
                   ? "bg-amber-400 animate-pulse"
-                  : connectionState === "error"
+                  : connectionState === "error" || connectionState === "failed"
                   ? "bg-red-400"
                   : "bg-slate-400"
               }`}

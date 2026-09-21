@@ -31,7 +31,7 @@ export type SocketAck<T = Record<string, unknown>> = SocketAckSuccess<T> | Socke
 export type SocketAckCallback<T = Record<string, unknown>> = (response: SocketAck<T>) => void;
 
 // Connection status
-export type SocketConnectionState = "disconnected" | "connecting" | "connected" | "error";
+export type SocketConnectionState = "disconnected" | "connecting" | "reconnecting" | "connected" | "error" | "failed";
 
 // Event payload contracts
 export interface RoomJoinPayload {

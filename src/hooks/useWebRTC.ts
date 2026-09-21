@@ -388,6 +388,53 @@ export function useWebRTC({
       }
     };
 
+    // G. Socket Transport Reconnect Handler
+    const handleConnect = () => {
+      // Clean up stale peer connections from previous transport session
+      peerConnectionsRef.current.forEach((pc, userId) => {
+        if (pc.connectionState === "failed" || pc.connectionState === "closed") {
+          closePeerConnection(userId);
+        }
+      });
+
+      // If local stream is active, re-announce ready to room
+      if (
+        localStreamRef.current &&
+        localStreamRef.current.getTracks().some((t) => t.enabled) &&
+        socket.connected
+      ) {
+        socket.emit("webrtc:peer-ready", {}, (response: SocketAck<WebRTCPeerReadyAckData>) => {
+          if (response.success && Array.isArray(response.data?.readyPeers)) {
+            response.data.readyPeers.forEach(async (peer) => {
+              if (peer.userId !== currentUserId) {
+                try {
+                  const pc = getOrCreatePeerConnection(peer.userId, peer.displayName);
+                  const offer = await pc.createOffer();
+                  await pc.setLocalDescription(offer);
+
+                  socket.emit(
+                    "webrtc:offer",
+                    {
+                      targetUserId: peer.userId,
+                      sdp: { type: "offer", sdp: offer.sdp || "" },
+                    },
+                    (ack?: SocketAck) => {
+                      if (ack && !ack.success) {
+                        console.warn("WebRTC offer failed on reconnect:", ack.error.message);
+                      }
+                    }
+                  );
+                } catch (err) {
+                  console.warn("Error creating WebRTC offer for peer on reconnect:", peer.userId, err);
+                }
+              }
+            });
+          }
+        });
+      }
+    };
+
+    socket.on("connect", handleConnect);
     socket.on("webrtc:peer-ready", handlePeerReady);
     socket.on("webrtc:offer", handleOffer);
     socket.on("webrtc:answer", handleAnswer);
@@ -397,6 +444,7 @@ export function useWebRTC({
     socket.on("room:user-left", handlePeerLeft);
 
     return () => {
+      socket.off("connect", handleConnect);
       socket.off("webrtc:peer-ready", handlePeerReady);
       socket.off("webrtc:offer", handleOffer);
       socket.off("webrtc:answer", handleAnswer);
