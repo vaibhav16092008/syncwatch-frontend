@@ -19,8 +19,8 @@ const PeerVideoCard: React.FC<{ peer: RemotePeerMedia }> = ({ peer }) => {
   }, [peer.stream]);
 
   return (
-    <Card className="p-0 border-slate-800 bg-slate-950 overflow-hidden relative group">
-      <div className="aspect-video w-full relative bg-slate-900 flex items-center justify-center">
+    <Card className="p-0 border-[var(--border-subtle)] bg-[var(--bg-base)] overflow-hidden relative group">
+      <div className="aspect-video w-full relative bg-[var(--bg-surface)] flex items-center justify-center">
         {peer.hasVideo ? (
           <video
             ref={videoRef}
@@ -30,17 +30,17 @@ const PeerVideoCard: React.FC<{ peer: RemotePeerMedia }> = ({ peer }) => {
           />
         ) : (
           <div className="flex flex-col items-center justify-center p-4 text-center space-y-2">
-            <div className="p-3 rounded-full bg-slate-800 text-indigo-400">
+            <div className="p-3 rounded-full bg-[var(--bg-elevated)] text-indigo-400">
               <User className="w-6 h-6" />
             </div>
-            <span className="text-xs font-semibold text-slate-300">
+            <span className="text-xs font-semibold text-[var(--text-secondary)]">
               {peer.displayName}
             </span>
           </div>
         )}
 
         {/* Overlay Label & Indicators */}
-        <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between px-2.5 py-1 rounded-lg bg-slate-900/80 backdrop-blur-md border border-slate-800 text-xs text-white">
+        <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between px-2.5 py-1 rounded-lg bg-[var(--bg-base)]/85 backdrop-blur-md border border-[var(--border-subtle)] text-xs text-[var(--text-primary)]">
           <span className="font-semibold truncate max-w-[120px]">
             {peer.displayName}
           </span>
@@ -48,12 +48,12 @@ const PeerVideoCard: React.FC<{ peer: RemotePeerMedia }> = ({ peer }) => {
             {peer.hasAudio ? (
               <Mic className="w-3.5 h-3.5 text-emerald-400" />
             ) : (
-              <MicOff className="w-3.5 h-3.5 text-red-400" />
+              <MicOff className="w-3.5 h-3.5 text-rose-400" />
             )}
             {peer.hasVideo ? (
               <Video className="w-3.5 h-3.5 text-indigo-400" />
             ) : (
-              <VideoOff className="w-3.5 h-3.5 text-slate-400" />
+              <VideoOff className="w-3.5 h-3.5 text-[var(--text-muted)]" />
             )}
           </div>
         </div>
@@ -67,7 +67,7 @@ export const RemoteMediaGrid: React.FC<RemoteMediaGridProps> = ({ peers }) => {
 
   return (
     <div className="space-y-2">
-      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 px-1">
+      <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] px-1">
         Peer Video Streams ({peers.length})
       </h4>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

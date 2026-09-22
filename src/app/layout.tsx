@@ -1,8 +1,15 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "@/contexts/SessionContext";
 import { SocketProvider } from "@/contexts/SocketContext";
 import { AppShell } from "@/components/layout/AppShell";
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+});
 
 export const metadata: Metadata = {
   title: "SyncWatch - Realtime Synchronized Watch Party",
@@ -16,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body>
+      <body className={`${inter.variable} font-sans`}>
         <SessionProvider>
           <SocketProvider>
             <AppShell>{children}</AppShell>

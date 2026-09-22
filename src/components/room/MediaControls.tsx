@@ -59,10 +59,10 @@ export const MediaControls: React.FC<MediaControlsProps> = ({
   // If Member (Read-only view)
   if (!isHost) {
     return (
-      <Card className="p-4 border-slate-800 bg-slate-900/90 flex flex-wrap items-center justify-between gap-3 text-xs">
+      <Card className="p-3.5 sm:p-4 border-[var(--border-subtle)] bg-[var(--bg-elevated)] flex flex-wrap items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-2">
-          <ShieldAlert className="w-4 h-4 text-indigo-400" />
-          <span className="text-slate-300 font-medium">Host Controlled Playback</span>
+          <ShieldAlert className="w-4 h-4 text-indigo-400 shrink-0" />
+          <span className="text-[var(--text-secondary)] font-medium">Host Controlled Playback</span>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant={isPlaying ? "success" : "neutral"} className="text-[11px] uppercase">
@@ -78,11 +78,11 @@ export const MediaControls: React.FC<MediaControlsProps> = ({
 
   // Host Control View
   return (
-    <Card className="space-y-4 border-slate-800 bg-slate-900/90 p-5 shadow-xl">
+    <Card className="space-y-4 border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-4 sm:p-5 shadow-xl">
       {/* Set Media Form */}
       <form onSubmit={handleSetMediaSubmit} className="space-y-2">
-        <div className="flex items-start gap-2">
-          <div className="flex-1">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-start gap-2.5">
+          <div className="flex-1 min-w-0">
             <Input
               placeholder="Paste YouTube URL or Video ID (e.g. dQw4w9WgXcQ)"
               value={mediaInput}
@@ -95,7 +95,7 @@ export const MediaControls: React.FC<MediaControlsProps> = ({
               disabled={isProcessing}
             />
           </div>
-          <Button type="submit" size="md" isLoading={isProcessing} disabled={!mediaInput.trim()}>
+          <Button type="submit" size="md" isLoading={isProcessing} disabled={!mediaInput.trim()} className="shrink-0 sm:self-start">
             Set Video
           </Button>
         </div>
@@ -103,9 +103,9 @@ export const MediaControls: React.FC<MediaControlsProps> = ({
 
       {/* Playback Controls (Active when Media is Loaded) */}
       {hasMedia && (
-        <div className="pt-2 border-t border-slate-800 flex flex-wrap items-center justify-between gap-4">
+        <div className="pt-3 border-t border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-4">
           {/* Play/Pause & Skip Controls */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <Button
               variant={isPlaying ? "secondary" : "primary"}
               size="sm"
@@ -152,13 +152,13 @@ export const MediaControls: React.FC<MediaControlsProps> = ({
           {/* Speed Selector & Clear Media */}
           <div className="flex items-center gap-3">
             {/* Speed Selector */}
-            <div className="flex items-center gap-1.5 text-xs text-slate-300">
+            <div className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)]">
               <Gauge className="w-4 h-4 text-indigo-400 shrink-0" />
               <select
                 value={currentRate}
                 onChange={(e) => onRate(parseFloat(e.target.value))}
                 disabled={isProcessing}
-                className="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-xs font-semibold text-slate-200 focus:outline-none focus:border-indigo-500"
+                className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-lg px-2.5 py-1 text-xs font-semibold text-[var(--text-primary)] focus:outline-none focus:border-[var(--border-focus)] cursor-pointer"
               >
                 {ALLOWED_RATES.map((rate) => (
                   <option key={rate} value={rate}>
@@ -174,7 +174,7 @@ export const MediaControls: React.FC<MediaControlsProps> = ({
               size="sm"
               onClick={onClearMedia}
               disabled={isProcessing}
-              className="text-red-400 hover:text-red-300 hover:bg-red-950/40"
+              className="text-rose-400 hover:text-rose-300 hover:bg-rose-500/10"
               title="Clear media from room"
             >
               <Trash2 className="w-4 h-4" />

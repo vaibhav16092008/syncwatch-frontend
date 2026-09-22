@@ -11,15 +11,15 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({ className, title = "
   return (
     <div
       className={cn(
-        "flex items-start gap-3 p-4 rounded-lg bg-red-950/40 border border-red-800/60 text-red-200 text-sm",
+        "flex items-start gap-3 p-4 rounded-lg bg-rose-500/10 border border-rose-500/25 text-[var(--text-primary)] text-sm",
         className
       )}
       {...props}
     >
-      <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+      <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
       <div className="space-y-1">
-        {title && <h4 className="font-semibold text-red-300 leading-none">{title}</h4>}
-        <p className="text-red-300/90 leading-relaxed">{message}</p>
+        {title && <h4 className="font-semibold text-rose-300 leading-none">{title}</h4>}
+        <p className="text-[var(--text-secondary)] leading-relaxed text-xs sm:text-sm">{message}</p>
       </div>
     </div>
   );

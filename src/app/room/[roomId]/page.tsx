@@ -511,23 +511,23 @@ export default function RoomPage({ params }: RoomPageProps) {
   // Render Case 1: Unauthorized Session / Direct Navigation without Session
   if (!isSessionValid) {
     return (
-      <div className="max-w-xl mx-auto space-y-6 py-8">
+      <div className="max-w-xl mx-auto space-y-6 py-12">
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Home</span>
         </Link>
 
-        <Card className="space-y-6 border-slate-800 bg-slate-900/90 text-center py-8">
-          <div className="p-3 w-fit rounded-full bg-amber-950/80 text-amber-400 border border-amber-800/80 mx-auto">
+        <Card className="space-y-6 border-[var(--border-subtle)] bg-[var(--bg-elevated)] text-center py-10 px-6 sm:px-8 shadow-xl">
+          <div className="p-3.5 w-fit rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 mx-auto">
             <KeyRound className="w-6 h-6" />
           </div>
 
           <div className="space-y-2 max-w-md mx-auto">
-            <h1 className="text-xl font-bold text-white">Session Required for Watch Room</h1>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <h1 className="text-xl font-bold text-[var(--text-primary)]">Session Required for Watch Room</h1>
+            <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed">
               You attempted to access room <span className="font-mono text-indigo-300 font-semibold">{roomIdFromRoute}</span> without an active join session. Please join with a display name or create your own room.
             </p>
           </div>
@@ -552,22 +552,22 @@ export default function RoomPage({ params }: RoomPageProps) {
   // Render Case 2: Room Error Screen
   if (roomError) {
     return (
-      <div className="max-w-xl mx-auto space-y-6 py-8">
+      <div className="max-w-xl mx-auto space-y-6 py-12">
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Home</span>
         </Link>
 
-        <Card className="space-y-6 border-slate-800 bg-slate-900/90">
+        <Card className="space-y-6 border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-6 sm:p-8 shadow-xl">
           <ErrorMessage
             title={`Room Connection Error (${roomError.code || "FAILED"})`}
             message={roomError.message}
           />
 
-          <div className="flex items-center justify-end gap-3 pt-2 border-t border-slate-800">
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-[var(--border-subtle)]">
             <Link href="/join">
               <Button variant="outline" size="sm">
                 Try Another Code
@@ -587,12 +587,12 @@ export default function RoomPage({ params }: RoomPageProps) {
   // Render Case 3: Initializing Loading Screen
   if (isInitializing) {
     return (
-      <div className="max-w-md mx-auto space-y-4 py-16 text-center">
+      <div className="max-w-md mx-auto space-y-4 py-24 text-center">
         <Spinner size="lg" className="mx-auto" />
-        <div className="space-y-1">
-          <h2 className="text-lg font-bold text-white">Connecting to Room</h2>
-          <p className="text-xs text-slate-400">
-            Binding realtime socket to <span className="font-mono text-indigo-300">{roomIdFromRoute}</span>...
+        <div className="space-y-1.5">
+          <h2 className="text-lg font-bold text-[var(--text-primary)]">Connecting to Watch Room</h2>
+          <p className="text-xs sm:text-sm text-[var(--text-secondary)]">
+            Binding realtime socket to <span className="font-mono text-indigo-400 font-semibold">{roomIdFromRoute}</span>...
           </p>
         </div>
       </div>
@@ -601,7 +601,7 @@ export default function RoomPage({ params }: RoomPageProps) {
 
   // Render Case 4: Active Watch Room View
   return (
-    <div className="space-y-6 -mt-8 -mx-4 sm:-mx-6 lg:-mx-8">
+    <div className="space-y-6 pb-8">
       {/* Room Header Toolbar */}
       <RoomHeader
         roomState={roomState}
@@ -610,124 +610,119 @@ export default function RoomPage({ params }: RoomPageProps) {
         isLeaving={isLeaving}
       />
 
+      {/* Connection Status Banner for Reconnection UX */}
+      <ConnectionStatus
+        connectionState={connectionState}
+        isRecovering={isRecovering}
+        onManualRetry={handleManualRetry}
+        recoveryError={recoveryError}
+      />
+
       {/* Main Room Layout Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 pb-8">
-        {/* Connection Status Banner for Reconnection UX */}
-        <ConnectionStatus
-          connectionState={connectionState}
-          isRecovering={isRecovering}
-          onManualRetry={handleManualRetry}
-          recoveryError={recoveryError}
-        />
+      <div className="grid lg:grid-cols-3 gap-6 items-start min-w-0">
+        {/* Main Watch Area Viewport & Controls (Cols 2) */}
+        <div className="lg:col-span-2 space-y-4 relative min-w-0">
+          {/* Ephemeral Reaction Animation Overlay */}
+          <ReactionOverlay reactions={reactions} />
 
-        <div className="grid lg:grid-cols-3 gap-6 items-start">
-          {/* Main Watch Area Viewport & Controls (Cols 2) */}
-          <div className="lg:col-span-2 space-y-4 relative">
-            {/* Ephemeral Reaction Animation Overlay */}
-            <ReactionOverlay reactions={reactions} />
-
-            {/* Local Camera Floating PiP Preview */}
-            <div className="absolute top-3 right-3 z-20">
-              <LocalVideoPreview
-                stream={webrtcLocalStream}
-                displayName={session?.displayName}
-                isCameraOn={isWebRTCCameraOn}
-                isMicOn={isWebRTCMicOn}
-              />
-            </div>
-
-            {mediaState?.source?.mediaId ? (
-              <YouTubePlayerView
-                mediaState={mediaState}
-                isHost={isHost}
-                onLocalPlay={handleLocalPlay}
-                onLocalPause={handleLocalPause}
-                onGetCurrentTimeRef={handleGetCurrentTimeRef}
-              />
-            ) : (
-              <WatchSurfacePlaceholder
-                roomName={roomState?.name}
-                mode={roomState?.mode}
-              />
-            )}
-
-            {/* Remote WebRTC Video Streams Grid */}
-            <RemoteMediaGrid peers={webrtcRemotePeers} />
-
-            {/* Host / Member Media Controls */}
-            <MediaControls
-              mediaState={mediaState}
-              isHost={isHost}
-              onSetMedia={handleSetMedia}
-              onPlay={handleControlsPlay}
-              onPause={handleControlsPause}
-              onSeek={handleSeek}
-              onRate={handleRate}
-              onClearMedia={handleClearMedia}
-            />
-
-            {/* Local WebRTC Camera & Mic Controls */}
-            <LocalMediaControls
+          {/* Local Camera Floating PiP Preview */}
+          <div className="absolute top-3 right-3 z-20">
+            <LocalVideoPreview
+              stream={webrtcLocalStream}
+              displayName={session?.displayName}
               isCameraOn={isWebRTCCameraOn}
               isMicOn={isWebRTCMicOn}
-              permissionStatus={webrtcPermissionStatus}
-              error={webrtcError}
-              onToggleCamera={() => toggleLocalMedia(!isWebRTCCameraOn, isWebRTCMicOn)}
-              onToggleMic={() => toggleLocalMedia(isWebRTCCameraOn, !isWebRTCMicOn)}
             />
+          </div>
 
-            {/* Reaction Bar */}
-            <ReactionBar onSendReaction={handleSendReaction} />
-
-            {/* File Sharing Offer Metadata Widget */}
-            <FileShareWidget
-              onShareFile={(name, size, mimeType) => shareFileMetadata(name, size, mimeType)}
-              receivedFiles={webrtcReceivedFiles}
+          {mediaState?.source?.mediaId ? (
+            <YouTubePlayerView
+              mediaState={mediaState}
+              isHost={isHost}
+              onLocalPlay={handleLocalPlay}
+              onLocalPause={handleLocalPause}
+              onGetCurrentTimeRef={handleGetCurrentTimeRef}
             />
+          ) : (
+            <WatchSurfacePlaceholder
+              roomName={roomState?.name}
+              mode={roomState?.mode}
+            />
+          )}
 
-            {/* Room Info Summary Bar */}
-            <Card className="p-4 border-slate-800 bg-slate-900/80 flex flex-wrap items-center justify-between gap-4 text-xs">
-              <div className="flex items-center gap-2">
-                <Info className="w-4 h-4 text-indigo-400" />
-                <span className="text-slate-300">
-                  Host: <span className="font-semibold text-white">{roomState?.users?.find(u => u.role === "host")?.displayName || "Assigning..."}</span>
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="neutral" className="text-[11px]">
-                  Mode: <span className="capitalize font-semibold text-slate-200">{roomState?.mode || "youtube"}</span>
+          {/* Remote WebRTC Video Streams Grid */}
+          <RemoteMediaGrid peers={webrtcRemotePeers} />
+
+          {/* Host / Member Media Controls */}
+          <MediaControls
+            mediaState={mediaState}
+            isHost={isHost}
+            onSetMedia={handleSetMedia}
+            onPlay={handleControlsPlay}
+            onPause={handleControlsPause}
+            onSeek={handleSeek}
+            onRate={handleRate}
+            onClearMedia={handleClearMedia}
+          />
+
+          {/* Local WebRTC Camera & Mic Controls */}
+          <LocalMediaControls
+            isCameraOn={isWebRTCCameraOn}
+            isMicOn={isWebRTCMicOn}
+            permissionStatus={webrtcPermissionStatus}
+            error={webrtcError}
+            onToggleCamera={() => toggleLocalMedia(!isWebRTCCameraOn, isWebRTCMicOn)}
+            onToggleMic={() => toggleLocalMedia(isWebRTCCameraOn, !isWebRTCMicOn)}
+          />
+
+          {/* Reaction Bar */}
+          <ReactionBar onSendReaction={handleSendReaction} />
+
+          {/* File Sharing Offer Metadata Widget */}
+          <FileShareWidget
+            onShareFile={(name, size, mimeType) => shareFileMetadata(name, size, mimeType)}
+            receivedFiles={webrtcReceivedFiles}
+          />
+
+          {/* Room Info Summary Bar */}
+          <Card className="p-3.5 border-[var(--border-subtle)] bg-[var(--bg-elevated)] flex flex-wrap items-center justify-between gap-4 text-xs">
+            <div className="flex items-center gap-2">
+              <Info className="w-4 h-4 text-indigo-400 shrink-0" />
+              <span className="text-[var(--text-secondary)]">
+                Room Host: <span className="font-semibold text-[var(--text-primary)]">{roomState?.users?.find(u => u.role === "host")?.displayName || "Assigning..."}</span>
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge variant="neutral" className="text-[11px] capitalize">
+                {roomState?.mode === "youtube" ? "YouTube Mode" : "Local File Mode"}
+              </Badge>
+              {roomState?.locked && (
+                <Badge variant="warning" className="text-[11px] gap-1">
+                  <Lock className="w-3 h-3" /> Room Locked
                 </Badge>
-                {roomState?.locked && (
-                  <Badge variant="warning" className="text-[11px] gap-1">
-                    <Lock className="w-3 h-3" /> Locked
-                  </Badge>
-                )}
-              </div>
-            </Card>
-          </div>
+              )}
+            </div>
+          </Card>
+        </div>
 
-          {/* Side Panel: Live Presence Roster & Chat (Col 1) */}
-          <div className="space-y-6">
-            <ChatPanel
-              messages={chatMessages}
-              currentUserId={session?.userId}
-              onSendMessage={handleSendMessage}
-              isSending={isSendingChat}
-              sendError={chatSendError}
-            />
+        {/* Side Panel: Live Presence Roster & Chat (Col 1) */}
+        <div className="space-y-6 min-w-0">
+          <ChatPanel
+            messages={chatMessages}
+            currentUserId={session?.userId}
+            onSendMessage={handleSendMessage}
+            isSending={isSendingChat}
+            sendError={chatSendError}
+          />
 
-            <PresenceRoster
-              users={presenceUsers}
-              currentUserId={session?.userId}
-              hostId={roomState?.hostId}
-              maxCapacity={roomState?.maxUsers || 10}
-            />
-          </div>
+          <PresenceRoster
+            users={presenceUsers}
+            currentUserId={session?.userId}
+            hostId={roomState?.hostId}
+            maxCapacity={roomState?.maxUsers || 10}
+          />
         </div>
       </div>
     </div>
   );
 }
-
-
-

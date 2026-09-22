@@ -26,14 +26,14 @@ export const LocalMediaControls: React.FC<LocalMediaControlsProps> = ({
 }) => {
   return (
     <div className="space-y-2">
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl bg-slate-900/90 border border-slate-800 shadow-lg">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3 sm:p-3.5 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-subtle)] shadow-lg">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
+          <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
             WebRTC Media:
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
           {/* Camera Button */}
           <Button
             type="button"
@@ -42,7 +42,7 @@ export const LocalMediaControls: React.FC<LocalMediaControlsProps> = ({
             onClick={onToggleCamera}
             disabled={disabled || permissionStatus === "requesting"}
             isLoading={permissionStatus === "requesting" && !isCameraOn && !isMicOn}
-            className="min-w-[110px]"
+            className="min-w-[100px] flex-1 sm:flex-none"
             title={isCameraOn ? "Turn camera off" : "Turn camera on"}
           >
             {isCameraOn ? (
@@ -65,7 +65,7 @@ export const LocalMediaControls: React.FC<LocalMediaControlsProps> = ({
             size="sm"
             onClick={onToggleMic}
             disabled={disabled || permissionStatus === "requesting"}
-            className="min-w-[110px]"
+            className="min-w-[100px] flex-1 sm:flex-none"
             title={isMicOn ? "Mute microphone" : "Unmute microphone"}
           >
             {isMicOn ? (
@@ -75,7 +75,7 @@ export const LocalMediaControls: React.FC<LocalMediaControlsProps> = ({
               </>
             ) : (
               <>
-                <MicOff className="w-3.5 h-3.5 text-slate-400" />
+                <MicOff className="w-3.5 h-3.5 text-[var(--text-muted)]" />
                 <span>Mic Off</span>
               </>
             )}
@@ -85,8 +85,8 @@ export const LocalMediaControls: React.FC<LocalMediaControlsProps> = ({
 
       {/* Error Alert */}
       {error && (
-        <div className="px-3 py-2 rounded-lg bg-red-950/70 border border-red-800/80 flex items-center gap-2 text-xs text-red-300">
-          <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
+        <div className="px-3.5 py-2 rounded-lg bg-rose-500/10 border border-rose-500/30 flex items-center gap-2 text-xs text-rose-300">
+          <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
           <span>{error}</span>
         </div>
       )}

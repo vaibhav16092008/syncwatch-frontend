@@ -77,16 +77,16 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   };
 
   return (
-    <Card className="flex flex-col h-[480px] border-slate-800 bg-slate-900/90 p-0 overflow-hidden shadow-xl">
+    <Card className="flex flex-col h-[460px] lg:h-[500px] border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-0 overflow-hidden shadow-xl">
       {/* Header */}
-      <div className="p-3.5 border-b border-slate-800/80 bg-slate-950/60 flex items-center justify-between">
+      <div className="p-3.5 border-b border-[var(--border-subtle)] bg-[var(--bg-base)]/60 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <MessageSquare className="w-4 h-4 text-indigo-400" />
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)]">
             Room Chat
           </h3>
         </div>
-        <span className="text-[11px] font-medium text-slate-400">
+        <span className="text-[11px] font-medium text-[var(--text-muted)]">
           {messages.length} {messages.length === 1 ? "message" : "messages"}
         </span>
       </div>
@@ -94,13 +94,13 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
       {/* Message List */}
       <div
         ref={containerRef}
-        className="flex-1 p-4 overflow-y-auto space-y-3.5 scrollbar-thin scrollbar-thumb-slate-800"
+        className="flex-1 p-4 overflow-y-auto space-y-3.5"
       >
         {messages.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center text-center p-6 text-slate-400 space-y-1">
-            <MessageSquare className="w-8 h-8 opacity-30 text-slate-400" />
-            <p className="text-xs font-medium">No messages yet.</p>
-            <p className="text-[11px] text-slate-400">Say hello to everyone in the room!</p>
+          <div className="h-full flex flex-col items-center justify-center text-center p-6 text-[var(--text-muted)] space-y-1.5">
+            <MessageSquare className="w-8 h-8 opacity-30 text-[var(--text-muted)]" />
+            <p className="text-xs font-medium text-[var(--text-secondary)]">No messages yet</p>
+            <p className="text-[11px] text-[var(--text-muted)]">Say hello to everyone in the room!</p>
           </div>
         ) : (
           messages.map((msg) => {
@@ -113,20 +113,20 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
                 <div className="flex items-center gap-2 px-1 text-[11px]">
                   <span
                     className={`font-semibold ${
-                      isMe ? "text-indigo-400" : "text-slate-300"
+                      isMe ? "text-indigo-400" : "text-[var(--text-secondary)]"
                     }`}
                   >
                     {msg.displayName} {isMe && "(You)"}
                   </span>
-                  <span className="text-[10px] text-slate-400">
+                  <span className="text-[10px] text-[var(--text-muted)]">
                     {formatTime(msg.createdAt)}
                   </span>
                 </div>
                 <div
                   className={`max-w-[85%] rounded-2xl px-3.5 py-2 text-xs leading-relaxed break-words shadow-sm ${
                     isMe
-                      ? "bg-indigo-600 text-white rounded-tr-none"
-                      : "bg-slate-800 text-slate-100 rounded-tl-none border border-slate-700/60"
+                      ? "bg-[var(--accent)] text-white rounded-tr-sm"
+                      : "bg-[var(--bg-surface)] text-[var(--text-primary)] rounded-tl-sm border border-[var(--border-subtle)]"
                   }`}
                 >
                   {msg.message}
@@ -140,8 +140,8 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
 
       {/* Error display */}
       {(localError || sendError) && (
-        <div className="px-3.5 py-1.5 bg-red-950/60 border-t border-red-800/60 flex items-center gap-1.5 text-[11px] text-red-300">
-          <AlertCircle className="w-3.5 h-3.5 shrink-0 text-red-400" />
+        <div className="px-3.5 py-1.5 bg-rose-500/10 border-t border-rose-500/30 flex items-center gap-1.5 text-[11px] text-rose-300">
+          <AlertCircle className="w-3.5 h-3.5 shrink-0 text-rose-400" />
           <span className="truncate">{localError || sendError}</span>
         </div>
       )}
@@ -149,7 +149,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
       {/* Input Form */}
       <form
         onSubmit={handleSend}
-        className="p-3 border-t border-slate-800 bg-slate-950/80 flex items-center gap-2"
+        className="p-3 border-t border-[var(--border-subtle)] bg-[var(--bg-base)]/80 flex items-center gap-2"
       >
         <div className="relative flex-1">
           <input
@@ -163,9 +163,9 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
             onKeyDown={handleKeyDown}
             disabled={isSending}
             maxLength={MAX_CHAT_LENGTH}
-            className="w-full bg-slate-900 border border-slate-700/80 rounded-lg pl-3 pr-12 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-indigo-500 disabled:opacity-50"
+            className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-lg pl-3 pr-12 py-2 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--border-focus)] disabled:opacity-50"
           />
-          <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 pointer-events-none">
+          <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-[var(--text-muted)] pointer-events-none">
             {inputMessage.length}/{MAX_CHAT_LENGTH}
           </span>
         </div>

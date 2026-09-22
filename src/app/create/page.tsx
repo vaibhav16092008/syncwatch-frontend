@@ -7,7 +7,6 @@ import { PlusCircle, ArrowLeft, User, Tv, Film, Check, ShieldAlert } from "lucid
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Badge } from "@/components/ui/Badge";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { useSession } from "@/hooks/useSession";
 import { createRoom } from "@/services/api/roomService";
@@ -96,29 +95,28 @@ export default function CreateRoomPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 py-4">
+    <div className="max-w-2xl mx-auto space-y-6 py-6">
       {/* Back Navigation */}
       <Link
         href="/"
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-white transition-colors"
+        className="inline-flex items-center gap-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Back to Home</span>
       </Link>
 
-      <Card className="space-y-6 border-slate-800 bg-slate-900/90 shadow-xl">
+      <Card className="space-y-6 shadow-xl border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-6 sm:p-8">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800/80 pb-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-indigo-950 text-indigo-400 border border-indigo-800/80">
+        <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-5">
+          <div className="flex items-center gap-3.5">
+            <div className="p-2.5 rounded-xl bg-[var(--accent-subtle)] text-indigo-400 border border-[var(--accent)]/30">
               <PlusCircle className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white">Create Watch Room</h1>
-              <p className="text-xs text-slate-400">Set up a room to start watching with friends</p>
+              <h1 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">Create Watch Room</h1>
+              <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-0.5">Set up a room to start watching with friends</p>
             </div>
           </div>
-          <Badge variant="primary">Server-Authoritative</Badge>
         </div>
 
         {/* Error Alert */}
@@ -165,8 +163,8 @@ export default function CreateRoomPage() {
           />
 
           {/* Room Mode Selector Cards */}
-          <div className="space-y-2">
-            <label className="block text-xs font-semibold text-slate-300 tracking-wide uppercase">
+          <div className="space-y-2.5">
+            <label className="block text-xs font-semibold text-[var(--text-secondary)] tracking-wide uppercase">
               Select Room Mode
             </label>
             <div className="grid sm:grid-cols-2 gap-4">
@@ -175,22 +173,22 @@ export default function CreateRoomPage() {
                 onClick={() => !isSubmitting && setMode("youtube")}
                 className={`cursor-pointer rounded-xl border p-4 transition-all duration-200 ${
                   mode === "youtube"
-                    ? "bg-indigo-950/40 border-indigo-600 ring-1 ring-indigo-500/50"
-                    : "bg-slate-950/60 border-slate-800 hover:border-slate-700"
+                    ? "bg-[var(--accent-subtle)] border-[var(--border-focus)] ring-1 ring-[var(--border-focus)]/50"
+                    : "bg-[var(--bg-surface)] border-[var(--border-subtle)] hover:border-[var(--border-medium)]"
                 } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 <div className="flex items-start justify-between">
-                  <div className="p-2 rounded-lg bg-red-950/80 text-red-400 border border-red-800/80 mb-3">
+                  <div className="p-2 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/30 mb-3">
                     <Tv className="w-5 h-5" />
                   </div>
                   {mode === "youtube" && (
-                    <div className="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center">
+                    <div className="w-5 h-5 rounded-full bg-[var(--accent)] text-white flex items-center justify-center">
                       <Check className="w-3.5 h-3.5" />
                     </div>
                   )}
                 </div>
-                <h3 className="text-sm font-semibold text-white">YouTube Sync</h3>
-                <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                <h3 className="text-sm font-semibold text-[var(--text-primary)]">YouTube Sync</h3>
+                <p className="text-xs text-[var(--text-secondary)] mt-1.5 leading-relaxed">
                   Synchronize YouTube video playback frame-accurately across all room members.
                 </p>
               </div>
@@ -200,22 +198,22 @@ export default function CreateRoomPage() {
                 onClick={() => !isSubmitting && setMode("local")}
                 className={`cursor-pointer rounded-xl border p-4 transition-all duration-200 ${
                   mode === "local"
-                    ? "bg-indigo-950/40 border-indigo-600 ring-1 ring-indigo-500/50"
-                    : "bg-slate-950/60 border-slate-800 hover:border-slate-700"
+                    ? "bg-[var(--accent-subtle)] border-[var(--border-focus)] ring-1 ring-[var(--border-focus)]/50"
+                    : "bg-[var(--bg-surface)] border-[var(--border-subtle)] hover:border-[var(--border-medium)]"
                 } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 <div className="flex items-start justify-between">
-                  <div className="p-2 rounded-lg bg-amber-950/80 text-amber-400 border border-amber-800/80 mb-3">
+                  <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/30 mb-3">
                     <Film className="w-5 h-5" />
                   </div>
                   {mode === "local" && (
-                    <div className="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center">
+                    <div className="w-5 h-5 rounded-full bg-[var(--accent)] text-white flex items-center justify-center">
                       <Check className="w-3.5 h-3.5" />
                     </div>
                   )}
                 </div>
-                <h3 className="text-sm font-semibold text-white">Local Video Sync</h3>
-                <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                <h3 className="text-sm font-semibold text-[var(--text-primary)]">Local Video Sync</h3>
+                <p className="text-xs text-[var(--text-secondary)] mt-1.5 leading-relaxed">
                   Synchronize playback of local video files stored on member devices via WebRTC.
                 </p>
               </div>
@@ -223,13 +221,13 @@ export default function CreateRoomPage() {
           </div>
 
           {/* Notice */}
-          <div className="flex items-center gap-2.5 p-3 rounded-lg bg-slate-950/80 border border-slate-800 text-xs text-slate-400">
+          <div className="flex items-center gap-2.5 p-3.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs text-[var(--text-secondary)]">
             <ShieldAlert className="w-4 h-4 text-indigo-400 shrink-0" />
             <span>As the creator, you will automatically be assigned as Host with media control privileges.</span>
           </div>
 
           {/* Submit Action */}
-          <div className="pt-2 flex items-center justify-end gap-3">
+          <div className="pt-2 flex items-center justify-end gap-3 border-t border-[var(--border-subtle)]">
             <Link href="/">
               <Button variant="outline" type="button" disabled={isSubmitting}>
                 Cancel

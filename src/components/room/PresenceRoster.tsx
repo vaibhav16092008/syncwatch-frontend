@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Users, Crown, User as UserIcon, Wifi, WifiOff } from "lucide-react";
+import { Users, Crown, Wifi, WifiOff } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { PresenceUser, RoomUser } from "@/types/api";
@@ -21,15 +21,24 @@ export const PresenceRoster: React.FC<PresenceRosterProps> = ({
 }) => {
   const connectedCount = users.filter((u) => u.connected !== false).length;
 
+  const getInitials = (name?: string) => {
+    if (!name) return "U";
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  };
+
   return (
-    <Card className="space-y-4 border-slate-800 bg-slate-900/90">
+    <Card className="space-y-4 border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+      <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-indigo-950 text-indigo-400 border border-indigo-800/80">
+          <div className="p-1.5 rounded-lg bg-[var(--accent-subtle)] text-indigo-400 border border-[var(--accent)]/30">
             <Users className="w-4 h-4" />
           </div>
-          <h3 className="text-sm font-bold text-white">Room Members</h3>
+          <h3 className="text-sm font-bold text-[var(--text-primary)]">Room Members</h3>
         </div>
         <Badge variant="primary" className="text-[11px]">
           {connectedCount} / {maxCapacity} Online
@@ -39,30 +48,31 @@ export const PresenceRoster: React.FC<PresenceRosterProps> = ({
       {/* User List */}
       <div className="space-y-2 max-h-[360px] overflow-y-auto pr-1">
         {users.length === 0 ? (
-          <p className="text-xs text-slate-500 text-center py-6">No participants connected yet.</p>
+          <p className="text-xs text-[var(--text-muted)] text-center py-6">No participants connected yet.</p>
         ) : (
           users.map((user) => {
             const isCurrent = currentUserId && (user.userId === currentUserId || user.id === currentUserId);
             const isHost = user.role === "host" || (hostId && (user.userId === hostId || user.id === hostId));
             const isConnected = user.connected !== false;
+            const initials = getInitials(user.displayName);
 
             return (
               <div
                 key={user.userId || user.id}
                 className={`flex items-center justify-between p-2.5 rounded-xl border transition-all duration-200 ${
                   isCurrent
-                    ? "bg-indigo-950/40 border-indigo-800/80"
-                    : "bg-slate-950/70 border-slate-800/80 hover:border-slate-700"
+                    ? "bg-[var(--accent-subtle)] border-[var(--accent)]/30"
+                    : "bg-[var(--bg-surface)] border-[var(--border-subtle)] hover:border-[var(--border-medium)]"
                 }`}
               >
                 <div className="flex items-center gap-2.5 min-w-0">
-                  {/* Status Indicator */}
+                  {/* Avatar Initials with Status Dot */}
                   <div className="relative shrink-0">
-                    <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300">
-                      <UserIcon className="w-4 h-4" />
+                    <div className="w-8 h-8 rounded-full bg-[var(--bg-hover)] border border-[var(--border-medium)] flex items-center justify-center text-xs font-bold text-[var(--text-primary)] select-none">
+                      {initials}
                     </div>
                     <span
-                      className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-slate-900 ${
+                      className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[var(--bg-elevated)] ${
                         isConnected ? "bg-emerald-500" : "bg-amber-500"
                       }`}
                     />
@@ -71,14 +81,14 @@ export const PresenceRoster: React.FC<PresenceRosterProps> = ({
                   {/* Name & Badges */}
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-semibold text-slate-200 truncate">
+                      <span className="text-xs font-semibold text-[var(--text-primary)] truncate">
                         {user.displayName || "Anonymous"}
                       </span>
                       {isCurrent && (
                         <span className="text-[10px] text-indigo-400 font-medium">(You)</span>
                       )}
                     </div>
-                    <div className="flex items-center gap-1 text-[10px] text-slate-400">
+                    <div className="flex items-center gap-1 text-[10px] text-[var(--text-muted)]">
                       {isConnected ? (
                         <span className="text-emerald-400 flex items-center gap-0.5">
                           <Wifi className="w-3 h-3" /> Connected

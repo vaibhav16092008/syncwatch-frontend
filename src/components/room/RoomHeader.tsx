@@ -1,11 +1,10 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 import { PlayCircle, LogOut, Lock, Unlock, Users, Tv, Film } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { PublicRoomState, RoomMode } from "@/types/api";
+import { PublicRoomState } from "@/types/api";
 import { SocketConnectionState } from "@/types/socket";
 
 interface RoomHeaderProps {
@@ -37,29 +36,22 @@ export const RoomHeader: React.FC<RoomHeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-slate-900/95 border-b border-slate-800 backdrop-blur-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Left: Branding & Room Info */}
-        <div className="flex items-center gap-4">
-          <Link href="/" className="flex items-center gap-2 group shrink-0">
-            <div className="p-1.5 rounded-lg bg-indigo-600 text-white group-hover:bg-indigo-500 transition-colors">
+    <div className="rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-subtle)] p-3.5 sm:p-4 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        {/* Left: Room Title & Badges */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-[var(--accent-subtle)] text-indigo-400 border border-[var(--accent)]/30 shrink-0">
               <PlayCircle className="w-5 h-5" />
             </div>
-            <span className="font-bold text-base text-white tracking-tight hidden sm:inline">
-              SyncWatch
-            </span>
-          </Link>
-
-          <div className="h-5 w-px bg-slate-800 hidden sm:block" />
-
-          {/* Room Title & Badges */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="font-bold text-base text-white truncate max-w-[180px] sm:max-w-[260px]">
+            <h1 className="font-bold text-base sm:text-lg text-[var(--text-primary)] truncate max-w-[200px] sm:max-w-[320px]">
               {roomState?.name || "Watch Room"}
             </h1>
+          </div>
 
+          <div className="flex items-center gap-2 flex-wrap">
             {roomState?.id && (
-              <Badge variant="primary" className="font-mono text-[11px]">
+              <Badge variant="primary" className="font-mono text-[11px] tracking-wider">
                 {roomState.id}
               </Badge>
             )}
@@ -68,7 +60,7 @@ export const RoomHeader: React.FC<RoomHeaderProps> = ({
               <Badge variant="neutral" className="text-[11px] gap-1">
                 {roomState.mode === "youtube" ? (
                   <>
-                    <Tv className="w-3 h-3 text-red-400" />
+                    <Tv className="w-3 h-3 text-rose-400" />
                     <span>YouTube</span>
                   </>
                 ) : (
@@ -83,7 +75,7 @@ export const RoomHeader: React.FC<RoomHeaderProps> = ({
             {roomState && (
               <Badge
                 variant={roomState.locked ? "warning" : "neutral"}
-                className="text-[11px] gap-1 hidden md:inline-flex"
+                className="text-[11px] gap-1"
               >
                 {roomState.locked ? (
                   <>
@@ -92,7 +84,7 @@ export const RoomHeader: React.FC<RoomHeaderProps> = ({
                   </>
                 ) : (
                   <>
-                    <Unlock className="w-3 h-3 text-slate-400" />
+                    <Unlock className="w-3 h-3 text-[var(--text-muted)]" />
                     <span>Unlocked</span>
                   </>
                 )}
@@ -102,7 +94,7 @@ export const RoomHeader: React.FC<RoomHeaderProps> = ({
         </div>
 
         {/* Right: Roster Stats, Connection Badge & Leave Button */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 sm:gap-3 shrink-0 self-end sm:self-auto">
           {roomState && (
             <Badge variant="neutral" className="text-[11px] gap-1.5 hidden sm:inline-flex">
               <Users className="w-3.5 h-3.5 text-indigo-400" />
@@ -120,7 +112,7 @@ export const RoomHeader: React.FC<RoomHeaderProps> = ({
                   : connectionState === "connecting" || connectionState === "reconnecting"
                   ? "bg-amber-400 animate-pulse"
                   : connectionState === "error" || connectionState === "failed"
-                  ? "bg-red-400"
+                  ? "bg-rose-400"
                   : "bg-slate-400"
               }`}
             />
@@ -139,6 +131,6 @@ export const RoomHeader: React.FC<RoomHeaderProps> = ({
           </Button>
         </div>
       </div>
-    </header>
+    </div>
   );
 };

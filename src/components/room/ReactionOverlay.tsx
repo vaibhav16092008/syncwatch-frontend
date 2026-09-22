@@ -22,11 +22,11 @@ export const ReactionOverlay: React.FC<ReactionOverlayProps> = ({ reactions }) =
         return (
           <div
             key={r.keyId}
-            className="absolute bottom-4 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-900/90 border border-slate-700/80 shadow-2xl text-xs text-slate-200 animate-float-up motion-reduce:animate-none backdrop-blur-md"
+            className="absolute bottom-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--bg-elevated)]/95 border border-[var(--border-medium)] shadow-2xl text-xs text-[var(--text-primary)] animate-float-up motion-reduce:animate-none backdrop-blur-md"
             style={{ left: `${leftPercent}%` }}
           >
             <span className="text-base sm:text-xl animate-bounce motion-reduce:animate-none">{r.emoji}</span>
-            <span className="font-semibold text-slate-300 text-[11px]">
+            <span className="font-semibold text-[var(--text-secondary)] text-[11px]">
               {r.displayName}
             </span>
           </div>
