@@ -169,9 +169,9 @@ export const YouTubePlayerView: React.FC<YouTubePlayerViewProps> = ({
 
   if (!videoId) {
     return (
-      <Card className="p-0 border-slate-800 overflow-hidden bg-slate-950 shadow-2xl">
+      <Card className="p-0 border-[var(--border-subtle)] overflow-hidden bg-[var(--bg-base)] shadow-2xl">
         <div className="aspect-video w-full flex flex-col items-center justify-center p-6 text-center">
-          <p className="text-sm font-medium text-slate-400">No media loaded.</p>
+          <p className="text-sm font-medium text-[var(--text-secondary)]">No media loaded.</p>
         </div>
       </Card>
     );
@@ -189,22 +189,22 @@ export const YouTubePlayerView: React.FC<YouTubePlayerViewProps> = ({
   };
 
   return (
-    <Card className="p-0 border-slate-800 overflow-hidden bg-slate-950 shadow-2xl relative">
+    <Card className="p-0 border-[var(--border-subtle)] overflow-hidden bg-[var(--bg-base)] shadow-2xl relative">
       <div className="aspect-video w-full relative bg-black">
         {hasPlayerError && (
-          <div className="absolute inset-0 bg-slate-950/90 z-20 flex flex-col items-center justify-center p-6 text-center space-y-2">
-            <AlertCircle className="w-8 h-8 text-red-400" />
-            <h3 className="text-sm font-bold text-white">Playback Error</h3>
-            <p className="text-xs text-slate-400 max-w-xs">
+          <div className="absolute inset-0 bg-[var(--bg-base)]/90 z-20 flex flex-col items-center justify-center p-6 text-center space-y-2">
+            <AlertCircle className="w-8 h-8 text-rose-400" />
+            <h3 className="text-sm font-bold text-[var(--text-primary)]">Playback Error</h3>
+            <p className="text-xs text-[var(--text-secondary)] max-w-xs">
               Unable to load this YouTube video. It may be restricted or unavailable.
             </p>
           </div>
         )}
 
         {!isPlayerReady && !hasPlayerError && (
-          <div className="absolute inset-0 bg-slate-950 z-10 flex flex-col items-center justify-center space-y-2">
+          <div className="absolute inset-0 bg-[var(--bg-base)] z-10 flex flex-col items-center justify-center space-y-2">
             <Spinner size="lg" />
-            <p className="text-xs text-slate-400">Loading YouTube Player...</p>
+            <p className="text-xs text-[var(--text-secondary)]">Loading YouTube Player...</p>
           </div>
         )}
 

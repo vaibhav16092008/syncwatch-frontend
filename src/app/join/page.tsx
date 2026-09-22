@@ -7,11 +7,9 @@ import { LogIn, ArrowLeft, Hash, User, ShieldAlert, PlusCircle } from "lucide-re
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Badge } from "@/components/ui/Badge";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { useSession } from "@/hooks/useSession";
 import { getRoomInfo } from "@/services/api/roomService";
-
 import { formatErrorMessage } from "@/utils/errors";
 
 const ROOM_CODE_REGEX = /^SYNC-[A-Z0-9]{5}$/i;
@@ -103,29 +101,28 @@ export default function JoinRoomPage() {
   };
 
   return (
-    <div className="max-w-xl mx-auto space-y-6 py-4">
+    <div className="max-w-xl mx-auto space-y-6 py-6">
       {/* Back Navigation */}
       <Link
         href="/"
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-white transition-colors"
+        className="inline-flex items-center gap-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Back to Home</span>
       </Link>
 
-      <Card className="space-y-6 border-slate-800 bg-slate-900/90 shadow-xl">
+      <Card className="space-y-6 shadow-xl border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-6 sm:p-8">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800/80 pb-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-indigo-950 text-indigo-400 border border-indigo-800/80">
+        <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-5">
+          <div className="flex items-center gap-3.5">
+            <div className="p-2.5 rounded-xl bg-[var(--accent-subtle)] text-indigo-400 border border-[var(--accent)]/30">
               <LogIn className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white">Join Watch Room</h1>
-              <p className="text-xs text-slate-400">Enter a room code to watch together</p>
+              <h1 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">Join Watch Room</h1>
+              <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-0.5">Enter a room code to watch together</p>
             </div>
           </div>
-          <Badge variant="primary">REST Verified</Badge>
         </div>
 
         {/* Error Alert */}
@@ -136,7 +133,7 @@ export default function JoinRoomPage() {
           {/* Room Code Input */}
           <Input
             label="Room Code"
-            placeholder="e.g. SYNC-A1B2C"
+            placeholder="SYNC-A1B2C"
             value={roomCode}
             onChange={(e) => {
               const val = e.target.value.toUpperCase();
@@ -150,6 +147,7 @@ export default function JoinRoomPage() {
             icon={<Hash className="w-4 h-4" />}
             disabled={isSubmitting}
             maxLength={10}
+            className="font-mono tracking-wider"
             required
           />
 
@@ -173,13 +171,13 @@ export default function JoinRoomPage() {
           />
 
           {/* Helper Notice */}
-          <div className="flex items-center gap-2.5 p-3 rounded-lg bg-slate-950/80 border border-slate-800 text-xs text-slate-400">
+          <div className="flex items-center gap-2.5 p-3.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs text-[var(--text-secondary)]">
             <ShieldAlert className="w-4 h-4 text-indigo-400 shrink-0" />
-            <span>Room existence will be verified before entering.</span>
+            <span>Room existence and access will be verified before entering.</span>
           </div>
 
           {/* Actions */}
-          <div className="pt-2 flex items-center justify-between border-t border-slate-800/80">
+          <div className="pt-2 flex items-center justify-between border-t border-[var(--border-subtle)]">
             <Link
               href="/create"
               className="inline-flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 font-medium transition-colors"

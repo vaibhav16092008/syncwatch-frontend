@@ -42,7 +42,7 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({
       <div
         role="status"
         aria-live="polite"
-        className="w-full bg-emerald-950/90 border border-emerald-800/80 rounded-lg p-3 text-emerald-200 text-xs flex items-center justify-between shadow-lg backdrop-blur-sm transition-all duration-300 animate-in fade-in slide-in-from-top-2"
+        className="w-full bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3 text-emerald-300 text-xs flex items-center justify-between shadow-lg backdrop-blur-sm transition-all duration-300"
       >
         <div className="flex items-center gap-2.5">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -58,12 +58,12 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({
       <div
         role="status"
         aria-live="polite"
-        className="w-full bg-amber-950/90 border border-amber-800/80 rounded-lg p-3 text-amber-200 text-xs flex items-center justify-between shadow-lg backdrop-blur-sm transition-all duration-300"
+        className="w-full bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-amber-200 text-xs flex items-center justify-between shadow-lg backdrop-blur-sm transition-all duration-300"
       >
         <div className="flex items-center gap-2.5">
           <RefreshCw className="w-4 h-4 text-amber-400 animate-spin shrink-0" />
           <div className="space-y-0.5">
-            <p className="font-semibold text-amber-100">
+            <p className="font-semibold text-amber-200">
               {isRecovering ? "Synchronizing room state..." : "Connection interrupted"}
             </p>
             <p className="text-[11px] text-amber-300/80">
@@ -73,7 +73,7 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-1.5 text-[11px] font-mono text-amber-400/90 bg-amber-900/40 px-2 py-1 rounded border border-amber-800/50 hidden sm:flex">
+        <div className="flex items-center gap-1.5 text-[11px] font-mono text-amber-300 bg-amber-500/15 px-2.5 py-1 rounded-md border border-amber-500/30 hidden sm:flex">
           <Wifi className="w-3 h-3 animate-pulse" />
           <span>RECONNECTING</span>
         </div>
@@ -86,15 +86,15 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({
     <div
       role="alert"
       aria-live="polite"
-      className="w-full bg-red-950/90 border border-red-800/80 rounded-lg p-3.5 text-red-200 text-xs flex flex-wrap items-center justify-between gap-3 shadow-lg backdrop-blur-sm transition-all duration-300"
+      className="w-full bg-rose-500/10 border border-rose-500/30 rounded-xl p-3.5 text-rose-200 text-xs flex flex-wrap items-center justify-between gap-3 shadow-lg backdrop-blur-sm transition-all duration-300"
     >
       <div className="flex items-center gap-2.5 min-w-[200px] flex-1">
-        <WifiOff className="w-4 h-4 text-red-400 shrink-0" />
+        <WifiOff className="w-4 h-4 text-rose-400 shrink-0" />
         <div className="space-y-0.5">
-          <p className="font-semibold text-red-100">
+          <p className="font-semibold text-rose-200">
             {recoveryError ? "Connection Failed" : "Realtime Connection Lost"}
           </p>
-          <p className="text-[11px] text-red-300/80">
+          <p className="text-[11px] text-rose-300/80">
             {recoveryError || "Unable to maintain socket connection. Please check your network and try again."}
           </p>
         </div>
@@ -105,7 +105,7 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({
           variant="outline"
           size="sm"
           onClick={onManualRetry}
-          className="border-red-700/80 bg-red-900/50 hover:bg-red-900 text-red-100 text-xs gap-1.5 shrink-0"
+          className="border-rose-500/40 bg-rose-500/10 hover:bg-rose-500/20 text-rose-200 text-xs gap-1.5 shrink-0"
         >
           <RefreshCw className="w-3.5 h-3.5" />
           <span>Try Reconnecting</span>

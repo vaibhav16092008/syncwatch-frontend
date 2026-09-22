@@ -23,33 +23,35 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-slate-900/95 border-b border-slate-800 backdrop-blur-sm">
+    <header className="sticky top-0 z-40 bg-[var(--bg-base)]/85 border-b border-[var(--border-subtle)] backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="p-1.5 rounded-lg bg-indigo-600 text-white group-hover:bg-indigo-500 transition-colors">
+        <Link href="/" className="flex items-center gap-2.5 group shrink-0">
+          <div className="p-1.5 rounded-lg bg-[var(--accent)] text-white group-hover:bg-[var(--accent-hover)] transition-colors shadow-sm">
             <PlayCircle className="w-5 h-5" />
           </div>
-          <span className="font-bold text-lg text-white tracking-tight">SyncWatch</span>
+          <span className="font-bold text-lg text-[var(--text-primary)] tracking-tight">SyncWatch</span>
         </Link>
 
-        <nav className="flex items-center gap-4">
+        <nav className="flex items-center gap-2 sm:gap-4">
           <Link
             href="/create"
-            className="flex items-center gap-1.5 text-xs font-medium text-slate-300 hover:text-white px-3 py-1.5 rounded-md hover:bg-slate-800 transition-colors"
+            className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] px-2.5 sm:px-3 py-1.5 rounded-lg hover:bg-[var(--bg-surface)] transition-colors"
+            title="Create Room"
           >
-            <PlusCircle className="w-4 h-4" />
-            <span>Create Room</span>
+            <PlusCircle className="w-4 h-4 shrink-0" />
+            <span className="hidden sm:inline">Create Room</span>
           </Link>
           <Link
             href="/join"
-            className="flex items-center gap-1.5 text-xs font-medium text-slate-300 hover:text-white px-3 py-1.5 rounded-md hover:bg-slate-800 transition-colors"
+            className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] px-2.5 sm:px-3 py-1.5 rounded-lg hover:bg-[var(--bg-surface)] transition-colors"
+            title="Join Room"
           >
-            <LogIn className="w-4 h-4" />
-            <span>Join Room</span>
+            <LogIn className="w-4 h-4 shrink-0" />
+            <span className="hidden sm:inline">Join Room</span>
           </Link>
 
-          <div className="pl-2 border-l border-slate-800">
-            <Badge variant={getStatusBadgeVariant()}>
+          <div className="pl-2 border-l border-[var(--border-subtle)]">
+            <Badge variant={getStatusBadgeVariant()} className="text-[11px] gap-1.5 py-1 px-2 sm:px-2.5">
               <span
                 className={`w-1.5 h-1.5 rounded-full ${
                   connectionState === "connected"
@@ -57,11 +59,11 @@ export const Header: React.FC = () => {
                     : connectionState === "connecting"
                     ? "bg-amber-400 animate-pulse"
                     : connectionState === "error"
-                    ? "bg-red-400"
+                    ? "bg-rose-400"
                     : "bg-slate-400"
                 }`}
               />
-              <span className="capitalize">{connectionState}</span>
+              <span className="capitalize hidden sm:inline">{connectionState}</span>
             </Badge>
           </div>
         </nav>

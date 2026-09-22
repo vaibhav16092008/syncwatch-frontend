@@ -10,20 +10,20 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "primary", size = "md", isLoading = false, children, disabled, ...props }, ref) => {
     const baseStyles =
-      "inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer select-none active:scale-[0.99]";
+      "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--border-focus)]/50 focus:ring-offset-2 focus:ring-offset-[var(--bg-base)] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer select-none active:scale-[0.99] motion-reduce:transform-none";
 
     const variants = {
-      primary: "bg-indigo-600 text-white hover:bg-indigo-500 active:bg-indigo-700 shadow-sm hover:shadow-indigo-500/20",
-      secondary: "bg-slate-800 text-slate-100 hover:bg-slate-700 active:bg-slate-900 border border-slate-700/80",
-      outline: "border border-slate-700/80 text-slate-200 hover:bg-slate-800 hover:text-white hover:border-slate-600",
-      ghost: "text-slate-300 hover:bg-slate-800/80 hover:text-white",
-      danger: "bg-red-600 text-white hover:bg-red-500 active:bg-red-700 shadow-sm",
+      primary: "bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] active:bg-[var(--accent-hover)] shadow-sm hover:shadow-[var(--accent)]/20",
+      secondary: "bg-[var(--bg-surface)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] active:bg-[var(--bg-active)] border border-[var(--border-medium)]",
+      outline: "border border-[var(--border-medium)] text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)] hover:border-[var(--text-muted)]",
+      ghost: "text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]",
+      danger: "bg-[var(--error)] text-white hover:opacity-90 active:opacity-80 shadow-sm",
     };
 
     const sizes = {
-      sm: "px-3.5 py-2 text-xs font-semibold gap-1.5",
-      md: "px-4.5 py-2.5 text-sm font-semibold gap-2",
-      lg: "px-6 py-3.5 text-base font-bold gap-2.5",
+      sm: "px-3 py-1.5 text-xs font-semibold gap-1.5",
+      md: "px-4 py-2 text-sm font-semibold gap-2",
+      lg: "px-5 py-2.5 text-base font-bold gap-2.5",
     };
 
     return (

@@ -40,11 +40,11 @@ export const FileShareWidget: React.FC<FileShareWidgetProps> = ({
   };
 
   return (
-    <Card className="p-3.5 border-slate-800 bg-slate-900/90 space-y-3 shadow-lg">
+    <Card className="p-3.5 border-[var(--border-subtle)] bg-[var(--bg-elevated)] space-y-3 shadow-lg">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <FileUp className="w-4 h-4 text-indigo-400" />
-          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-200">
+          <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
             Local File Offer
           </h4>
         </div>
@@ -70,21 +70,21 @@ export const FileShareWidget: React.FC<FileShareWidgetProps> = ({
       </div>
 
       {receivedFiles.length > 0 && (
-        <div className="space-y-1.5 pt-2 border-t border-slate-800">
-          <span className="text-[11px] font-semibold text-slate-400">
+        <div className="space-y-1.5 pt-2.5 border-t border-[var(--border-subtle)]">
+          <span className="text-[11px] font-semibold text-[var(--text-muted)]">
             Shared Files ({receivedFiles.length}):
           </span>
-          <div className="max-h-28 overflow-y-auto space-y-1 scrollbar-thin">
+          <div className="max-h-28 overflow-y-auto space-y-1">
             {receivedFiles.map((file) => (
               <div
                 key={file.fileId}
-                className="p-2 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-between text-xs"
+                className="p-2 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex items-center justify-between text-xs"
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  <FileText className="w-4 h-4 text-slate-400 shrink-0" />
+                  <FileText className="w-4 h-4 text-[var(--text-muted)] shrink-0" />
                   <div className="truncate">
-                    <p className="font-semibold text-slate-200 truncate">{file.name}</p>
-                    <p className="text-[10px] text-slate-400">
+                    <p className="font-semibold text-[var(--text-primary)] truncate">{file.name}</p>
+                    <p className="text-[10px] text-[var(--text-muted)]">
                       {file.senderDisplayName} • {formatFileSize(file.size)}
                     </p>
                   </div>
@@ -93,7 +93,7 @@ export const FileShareWidget: React.FC<FileShareWidgetProps> = ({
                   variant="ghost"
                   size="sm"
                   title="File offer metadata announced"
-                  className="text-slate-400 hover:text-white"
+                  className="text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 >
                   <Download className="w-3.5 h-3.5" />
                 </Button>
