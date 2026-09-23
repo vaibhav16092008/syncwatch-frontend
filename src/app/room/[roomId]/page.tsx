@@ -3,7 +3,7 @@
 import React, { use, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, KeyRound, Lock, Info } from "lucide-react";
+import { ArrowLeft, KeyRound, Lock, Info, MessageSquare, Users } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -89,6 +89,10 @@ export default function RoomPage({ params }: RoomPageProps) {
   const [isInitializing, setIsInitializing] = useState(true);
   const [roomError, setRoomError] = useState<{ code?: string; message: string } | null>(null);
   const [isLeaving, setIsLeaving] = useState(false);
+
+  // Sidebar layout state
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [activeSidebarTab, setActiveSidebarTab] = useState<"chat" | "audience">("chat");
 
   // Reconnection UX state
   const [isRecovering, setIsRecovering] = useState(false);
@@ -511,40 +515,42 @@ export default function RoomPage({ params }: RoomPageProps) {
   // Render Case 1: Unauthorized Session / Direct Navigation without Session
   if (!isSessionValid) {
     return (
-      <div className="max-w-xl mx-auto space-y-6 py-12">
+      <div className="max-w-md mx-auto space-y-6 py-12 text-center">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+          className="inline-flex items-center gap-2 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to Home</span>
         </Link>
 
-        <Card className="space-y-6 border-[var(--border-subtle)] bg-[var(--bg-elevated)] text-center py-10 px-6 sm:px-8 shadow-xl">
-          <div className="p-3.5 w-fit rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 mx-auto">
+        <div className="space-y-6 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-8 shadow-xl">
+          <div className="p-3 w-fit rounded-full bg-[var(--accent-subtle)] text-[var(--accent)] border border-[var(--accent)]/30 mx-auto">
             <KeyRound className="w-6 h-6" />
           </div>
 
-          <div className="space-y-2 max-w-md mx-auto">
-            <h1 className="text-xl font-bold text-[var(--text-primary)]">Session Required for Watch Room</h1>
+          <div className="space-y-2">
+            <h1 className="font-display text-2xl font-normal text-[var(--text-primary)] tracking-wide">
+              Session Required
+            </h1>
             <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed">
-              You attempted to access room <span className="font-mono text-indigo-300 font-semibold">{roomIdFromRoute}</span> without an active join session. Please join with a display name or create your own room.
+              You attempted to access screening room <span className="font-mono text-[var(--accent)] font-medium">{roomIdFromRoute}</span> without an active session.
             </p>
           </div>
 
-          <div className="flex items-center justify-center gap-4 pt-2">
+          <div className="flex items-center justify-center gap-3 pt-2">
             <Link href="/join">
               <Button variant="primary" size="md">
-                Join Room
+                Join with code
               </Button>
             </Link>
             <Link href="/create">
-              <Button variant="outline" size="md">
-                Create Room
+              <Button variant="secondary" size="md">
+                Host room
               </Button>
             </Link>
           </div>
-        </Card>
+        </div>
       </div>
     );
   }
@@ -552,34 +558,34 @@ export default function RoomPage({ params }: RoomPageProps) {
   // Render Case 2: Room Error Screen
   if (roomError) {
     return (
-      <div className="max-w-xl mx-auto space-y-6 py-12">
+      <div className="max-w-md mx-auto space-y-6 py-12">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+          className="inline-flex items-center gap-2 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to Home</span>
         </Link>
 
-        <Card className="space-y-6 border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-6 sm:p-8 shadow-xl">
+        <div className="space-y-6 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-6 sm:p-8 shadow-xl">
           <ErrorMessage
-            title={`Room Connection Error (${roomError.code || "FAILED"})`}
+            title={`Connection Issue (${roomError.code || "FAILED"})`}
             message={roomError.message}
           />
 
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-[var(--border-subtle)]">
+          <div className="flex items-center justify-end gap-3 pt-2 border-t border-[var(--border-subtle)]">
             <Link href="/join">
               <Button variant="outline" size="sm">
-                Try Another Code
+                Try another code
               </Button>
             </Link>
             <Link href="/create">
               <Button variant="primary" size="sm">
-                Create New Room
+                Host new room
               </Button>
             </Link>
           </div>
-        </Card>
+        </div>
       </div>
     );
   }
@@ -590,18 +596,20 @@ export default function RoomPage({ params }: RoomPageProps) {
       <div className="max-w-md mx-auto space-y-4 py-24 text-center">
         <Spinner size="lg" className="mx-auto" />
         <div className="space-y-1.5">
-          <h2 className="text-lg font-bold text-[var(--text-primary)]">Connecting to Watch Room</h2>
-          <p className="text-xs sm:text-sm text-[var(--text-secondary)]">
-            Binding realtime socket to <span className="font-mono text-indigo-400 font-semibold">{roomIdFromRoute}</span>...
+          <h2 className="font-display text-xl font-normal text-[var(--text-primary)] tracking-wide">
+            Entering Screening Room
+          </h2>
+          <p className="text-xs text-[var(--text-muted)]">
+            Connecting socket to <span className="font-mono text-[var(--accent)]">{roomIdFromRoute}</span>...
           </p>
         </div>
       </div>
     );
   }
 
-  // Render Case 4: Active Watch Room View
+  // Render Case 4: Active Watch Room View (Theater Layout)
   return (
-    <div className="space-y-6 pb-8">
+    <div className="space-y-3 pb-8">
       {/* Room Header Toolbar */}
       <RoomHeader
         roomState={roomState}
@@ -610,7 +618,7 @@ export default function RoomPage({ params }: RoomPageProps) {
         isLeaving={isLeaving}
       />
 
-      {/* Connection Status Banner for Reconnection UX */}
+      {/* Connection Status Banner */}
       <ConnectionStatus
         connectionState={connectionState}
         isRecovering={isRecovering}
@@ -618,42 +626,42 @@ export default function RoomPage({ params }: RoomPageProps) {
         recoveryError={recoveryError}
       />
 
-      {/* Main Room Layout Grid */}
-      <div className="grid lg:grid-cols-3 gap-6 items-start min-w-0">
-        {/* Main Watch Area Viewport & Controls (Cols 2) */}
-        <div className="lg:col-span-2 space-y-4 relative min-w-0">
-          {/* Ephemeral Reaction Animation Overlay */}
-          <ReactionOverlay reactions={reactions} />
+      {/* Theater Layout: Video Stage + Collapsible Sidebar */}
+      <div className="flex flex-col lg:flex-row gap-4 items-start min-w-0">
+        {/* Main Stage (Video Surface, Controls & Micro-Tools) */}
+        <div className="flex-1 min-w-0 space-y-3 w-full">
+          {/* Video Container (Hard rectangular edges, 16:9 ratio) */}
+          <div className="relative w-full aspect-video bg-black rounded-sm overflow-hidden border border-[var(--border-subtle)] screen-shadow">
+            {/* Ephemeral Reaction Overlay */}
+            <ReactionOverlay reactions={reactions} />
 
-          {/* Local Camera Floating PiP Preview */}
-          <div className="absolute top-3 right-3 z-20">
-            <LocalVideoPreview
-              stream={webrtcLocalStream}
-              displayName={session?.displayName}
-              isCameraOn={isWebRTCCameraOn}
-              isMicOn={isWebRTCMicOn}
-            />
+            {/* Local Camera Floating PiP Preview */}
+            <div className="absolute top-2.5 right-2.5 z-20">
+              <LocalVideoPreview
+                stream={webrtcLocalStream}
+                displayName={session?.displayName}
+                isCameraOn={isWebRTCCameraOn}
+                isMicOn={isWebRTCMicOn}
+              />
+            </div>
+
+            {mediaState?.source?.mediaId ? (
+              <YouTubePlayerView
+                mediaState={mediaState}
+                isHost={isHost}
+                onLocalPlay={handleLocalPlay}
+                onLocalPause={handleLocalPause}
+                onGetCurrentTimeRef={handleGetCurrentTimeRef}
+              />
+            ) : (
+              <WatchSurfacePlaceholder
+                roomName={roomState?.name}
+                mode={roomState?.mode}
+              />
+            )}
           </div>
 
-          {mediaState?.source?.mediaId ? (
-            <YouTubePlayerView
-              mediaState={mediaState}
-              isHost={isHost}
-              onLocalPlay={handleLocalPlay}
-              onLocalPause={handleLocalPause}
-              onGetCurrentTimeRef={handleGetCurrentTimeRef}
-            />
-          ) : (
-            <WatchSurfacePlaceholder
-              roomName={roomState?.name}
-              mode={roomState?.mode}
-            />
-          )}
-
-          {/* Remote WebRTC Video Streams Grid */}
-          <RemoteMediaGrid peers={webrtcRemotePeers} />
-
-          {/* Host / Member Media Controls */}
+          {/* Integrated Media Controls Strip */}
           <MediaControls
             mediaState={mediaState}
             isHost={isHost}
@@ -665,63 +673,113 @@ export default function RoomPage({ params }: RoomPageProps) {
             onClearMedia={handleClearMedia}
           />
 
-          {/* Local WebRTC Camera & Mic Controls */}
-          <LocalMediaControls
-            isCameraOn={isWebRTCCameraOn}
-            isMicOn={isWebRTCMicOn}
-            permissionStatus={webrtcPermissionStatus}
-            error={webrtcError}
-            onToggleCamera={() => toggleLocalMedia(!isWebRTCCameraOn, isWebRTCMicOn)}
-            onToggleMic={() => toggleLocalMedia(isWebRTCCameraOn, !isWebRTCMicOn)}
-          />
-
-          {/* Reaction Bar */}
+          {/* Reactions Row */}
           <ReactionBar onSendReaction={handleSendReaction} />
 
-          {/* File Sharing Offer Metadata Widget */}
-          <FileShareWidget
-            onShareFile={(name, size, mimeType) => shareFileMetadata(name, size, mimeType)}
-            receivedFiles={webrtcReceivedFiles}
-          />
+          {/* Remote WebRTC Peer Video Streams */}
+          <RemoteMediaGrid peers={webrtcRemotePeers} />
 
-          {/* Room Info Summary Bar */}
-          <Card className="p-3.5 border-[var(--border-subtle)] bg-[var(--bg-elevated)] flex flex-wrap items-center justify-between gap-4 text-xs">
-            <div className="flex items-center gap-2">
-              <Info className="w-4 h-4 text-indigo-400 shrink-0" />
-              <span className="text-[var(--text-secondary)]">
-                Room Host: <span className="font-semibold text-[var(--text-primary)]">{roomState?.users?.find(u => u.role === "host")?.displayName || "Assigning..."}</span>
-              </span>
+          {/* Subordinate Inline Utilities: Stream toggles & P2P file share */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <LocalMediaControls
+              isCameraOn={isWebRTCCameraOn}
+              isMicOn={isWebRTCMicOn}
+              permissionStatus={webrtcPermissionStatus}
+              error={webrtcError}
+              onToggleCamera={() => toggleLocalMedia(!isWebRTCCameraOn, isWebRTCMicOn)}
+              onToggleMic={() => toggleLocalMedia(isWebRTCCameraOn, !isWebRTCMicOn)}
+            />
+
+            <FileShareWidget
+              onShareFile={(name, size, mimeType) => shareFileMetadata(name, size, mimeType)}
+              receivedFiles={webrtcReceivedFiles}
+            />
+          </div>
+        </div>
+
+        {/* Right Sidebar: Chat & Audience Roster with Collapse/Expand */}
+        {isSidebarOpen ? (
+          <div className="w-full lg:w-80 sm:w-96 shrink-0 space-y-2">
+            {/* Sidebar Tabs */}
+            <div className="flex items-center justify-between p-1 rounded-md bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs">
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => setActiveSidebarTab("chat")}
+                  className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs transition-colors cursor-pointer ${
+                    activeSidebarTab === "chat"
+                      ? "bg-[var(--accent)] text-white font-medium"
+                      : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  }`}
+                >
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  <span>Chat</span>
+                  <span className="text-[10px] opacity-80">({chatMessages.length})</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setActiveSidebarTab("audience")}
+                  className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs transition-colors cursor-pointer ${
+                    activeSidebarTab === "audience"
+                      ? "bg-[var(--accent)] text-white font-medium"
+                      : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  }`}
+                >
+                  <Users className="w-3.5 h-3.5" />
+                  <span>Audience</span>
+                  <span className="text-[10px] opacity-80">({presenceUsers.length})</span>
+                </button>
+              </div>
+
+              {/* Collapse Sidebar Button */}
+              <button
+                type="button"
+                onClick={() => setIsSidebarOpen(false)}
+                className="text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 cursor-pointer text-xs"
+                title="Collapse sidebar"
+              >
+                Hide
+              </button>
             </div>
-            <div className="flex items-center gap-2">
-              <Badge variant="neutral" className="text-[11px] capitalize">
-                {roomState?.mode === "youtube" ? "YouTube Mode" : "Local File Mode"}
-              </Badge>
-              {roomState?.locked && (
-                <Badge variant="warning" className="text-[11px] gap-1">
-                  <Lock className="w-3 h-3" /> Room Locked
-                </Badge>
+
+            {/* Tab Contents */}
+            {activeSidebarTab === "chat" ? (
+              <ChatPanel
+                messages={chatMessages}
+                currentUserId={session?.userId}
+                onSendMessage={handleSendMessage}
+                isSending={isSendingChat}
+                sendError={chatSendError}
+                onClose={() => setIsSidebarOpen(false)}
+              />
+            ) : (
+              <PresenceRoster
+                users={presenceUsers}
+                currentUserId={session?.userId}
+                hostId={roomState?.hostId}
+                maxCapacity={roomState?.maxUsers || 10}
+              />
+            )}
+          </div>
+        ) : (
+          /* Reopen Sidebar Trigger when collapsed */
+          <div className="fixed bottom-4 right-4 z-40">
+            <button
+              type="button"
+              onClick={() => setIsSidebarOpen(true)}
+              className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-hover)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-xs shadow-xl cursor-pointer transition-transform hover:scale-105"
+            >
+              <MessageSquare className="w-4 h-4 text-[var(--accent)]" />
+              <span>Open Chat</span>
+              {chatMessages.length > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full bg-[var(--accent)] text-white text-[10px]">
+                  {chatMessages.length}
+                </span>
               )}
-            </div>
-          </Card>
-        </div>
-
-        {/* Side Panel: Live Presence Roster & Chat (Col 1) */}
-        <div className="space-y-6 min-w-0">
-          <ChatPanel
-            messages={chatMessages}
-            currentUserId={session?.userId}
-            onSendMessage={handleSendMessage}
-            isSending={isSendingChat}
-            sendError={chatSendError}
-          />
-
-          <PresenceRoster
-            users={presenceUsers}
-            currentUserId={session?.userId}
-            hostId={roomState?.hostId}
-            maxCapacity={roomState?.maxUsers || 10}
-          />
-        </div>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

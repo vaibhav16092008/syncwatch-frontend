@@ -3,8 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { PlusCircle, ArrowLeft, User, Tv, Film, Check, ShieldAlert } from "lucide-react";
-import { Card } from "@/components/ui/Card";
+import { ArrowLeft, Check, Tv, Film } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
@@ -95,150 +94,140 @@ export default function CreateRoomPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 py-6">
-      {/* Back Navigation */}
+    <div className="max-w-xl mx-auto space-y-8 py-4 sm:py-8">
+      {/* Back link */}
       <Link
         href="/"
-        className="inline-flex items-center gap-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+        className="inline-flex items-center gap-2 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
       >
-        <ArrowLeft className="w-4 h-4" />
+        <ArrowLeft className="w-3.5 h-3.5" />
         <span>Back to Home</span>
       </Link>
 
-      <Card className="space-y-6 shadow-xl border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-6 sm:p-8">
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-5">
-          <div className="flex items-center gap-3.5">
-            <div className="p-2.5 rounded-xl bg-[var(--accent-subtle)] text-indigo-400 border border-[var(--accent)]/30">
-              <PlusCircle className="w-6 h-6" />
+      {/* Header */}
+      <div className="space-y-2">
+        <h1 className="font-display text-3xl sm:text-4xl font-normal text-[var(--text-primary)] tracking-wide">
+          Host a screening
+        </h1>
+        <p className="text-sm text-[var(--text-secondary)]">
+          Set your name and choose how to watch.
+        </p>
+      </div>
+
+      {/* Error Alert */}
+      {errorMessage && <ErrorMessage message={errorMessage} title="Room Creation Failed" />}
+
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="space-y-7">
+        {/* Your Name */}
+        <Input
+          label="Your name"
+          placeholder="e.g. Alex"
+          value={displayName}
+          onChange={(e) => {
+            setDisplayName(e.target.value);
+            if (validationErrors.displayName) {
+              setValidationErrors((prev) => ({ ...prev, displayName: undefined }));
+            }
+          }}
+          error={validationErrors.displayName}
+          helperText="2 to 24 characters. Visible to all members."
+          disabled={isSubmitting}
+          maxLength={24}
+          required
+        />
+
+        {/* Room Name */}
+        <Input
+          label="Room name"
+          placeholder="e.g. Friday Night Movie"
+          value={name}
+          onChange={(e) => {
+            setName(e.target.value);
+            if (validationErrors.name) {
+              setValidationErrors((prev) => ({ ...prev, name: undefined }));
+            }
+          }}
+          error={validationErrors.name}
+          helperText="1 to 50 characters."
+          disabled={isSubmitting}
+          maxLength={50}
+          required
+        />
+
+        {/* Mode Selector - Tall Panels */}
+        <div className="space-y-2">
+          <label className="block text-xs sm:text-sm font-medium text-[var(--text-secondary)]">
+            Screening mode
+          </label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            {/* YouTube Mode */}
+            <div
+              onClick={() => !isSubmitting && setMode("youtube")}
+              className={`p-4 rounded-lg cursor-pointer transition-all duration-200 border flex flex-col justify-between min-h-[120px] ${
+                mode === "youtube"
+                  ? "bg-[var(--bg-surface)] border-[var(--accent)] shadow-sm shadow-[var(--accent-glow)]"
+                  : "bg-[var(--bg-surface)]/60 border-[var(--border-subtle)] opacity-70 hover:opacity-100 hover:border-[var(--border-medium)]"
+              } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+            >
+              <div className="flex items-center justify-between">
+                <Tv className="w-5 h-5 text-[var(--accent)]" />
+                {mode === "youtube" && (
+                  <span className="w-4 h-4 rounded-full bg-[var(--accent)] text-white flex items-center justify-center">
+                    <Check className="w-3 h-3 stroke-[2.5]" />
+                  </span>
+                )}
+              </div>
+              <div className="space-y-1 mt-3">
+                <h3 className="text-sm font-medium text-[var(--text-primary)]">YouTube Sync</h3>
+                <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+                  Synchronize YouTube video playback in real time.
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">Create Watch Room</h1>
-              <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-0.5">Set up a room to start watching with friends</p>
+
+            {/* Local Video Mode */}
+            <div
+              onClick={() => !isSubmitting && setMode("local")}
+              className={`p-4 rounded-lg cursor-pointer transition-all duration-200 border flex flex-col justify-between min-h-[120px] ${
+                mode === "local"
+                  ? "bg-[var(--bg-surface)] border-[var(--accent)] shadow-sm shadow-[var(--accent-glow)]"
+                  : "bg-[var(--bg-surface)]/60 border-[var(--border-subtle)] opacity-70 hover:opacity-100 hover:border-[var(--border-medium)]"
+              } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
+            >
+              <div className="flex items-center justify-between">
+                <Film className="w-5 h-5 text-[var(--accent-secondary)]" />
+                {mode === "local" && (
+                  <span className="w-4 h-4 rounded-full bg-[var(--accent)] text-white flex items-center justify-center">
+                    <Check className="w-3 h-3 stroke-[2.5]" />
+                  </span>
+                )}
+              </div>
+              <div className="space-y-1 mt-3">
+                <h3 className="text-sm font-medium text-[var(--text-primary)]">Local Video</h3>
+                <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+                  Synchronize local video files via peer-to-peer WebRTC.
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Error Alert */}
-        {errorMessage && <ErrorMessage message={errorMessage} title="Room Creation Failed" />}
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Display Name Field */}
-          <Input
-            label="Your Display Name"
-            placeholder="e.g. Alex"
-            value={displayName}
-            onChange={(e) => {
-              setDisplayName(e.target.value);
-              if (validationErrors.displayName) {
-                setValidationErrors((prev) => ({ ...prev, displayName: undefined }));
-              }
-            }}
-            error={validationErrors.displayName}
-            helperText="2 to 24 characters. Visible to all room members."
-            icon={<User className="w-4 h-4" />}
-            disabled={isSubmitting}
-            maxLength={24}
-            required
-          />
-
-          {/* Room Name Field */}
-          <Input
-            label="Room Name"
-            placeholder="e.g. Friday Night Movie"
-            value={name}
-            onChange={(e) => {
-              setName(e.target.value);
-              if (validationErrors.name) {
-                setValidationErrors((prev) => ({ ...prev, name: undefined }));
-              }
-            }}
-            error={validationErrors.name}
-            helperText="1 to 50 characters."
-            icon={<Tv className="w-4 h-4" />}
-            disabled={isSubmitting}
-            maxLength={50}
-            required
-          />
-
-          {/* Room Mode Selector Cards */}
-          <div className="space-y-2.5">
-            <label className="block text-xs font-semibold text-[var(--text-secondary)] tracking-wide uppercase">
-              Select Room Mode
-            </label>
-            <div className="grid sm:grid-cols-2 gap-4">
-              {/* YouTube Mode */}
-              <div
-                onClick={() => !isSubmitting && setMode("youtube")}
-                className={`cursor-pointer rounded-xl border p-4 transition-all duration-200 ${
-                  mode === "youtube"
-                    ? "bg-[var(--accent-subtle)] border-[var(--border-focus)] ring-1 ring-[var(--border-focus)]/50"
-                    : "bg-[var(--bg-surface)] border-[var(--border-subtle)] hover:border-[var(--border-medium)]"
-                } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="p-2 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/30 mb-3">
-                    <Tv className="w-5 h-5" />
-                  </div>
-                  {mode === "youtube" && (
-                    <div className="w-5 h-5 rounded-full bg-[var(--accent)] text-white flex items-center justify-center">
-                      <Check className="w-3.5 h-3.5" />
-                    </div>
-                  )}
-                </div>
-                <h3 className="text-sm font-semibold text-[var(--text-primary)]">YouTube Sync</h3>
-                <p className="text-xs text-[var(--text-secondary)] mt-1.5 leading-relaxed">
-                  Synchronize YouTube video playback frame-accurately across all room members.
-                </p>
-              </div>
-
-              {/* Local File Mode */}
-              <div
-                onClick={() => !isSubmitting && setMode("local")}
-                className={`cursor-pointer rounded-xl border p-4 transition-all duration-200 ${
-                  mode === "local"
-                    ? "bg-[var(--accent-subtle)] border-[var(--border-focus)] ring-1 ring-[var(--border-focus)]/50"
-                    : "bg-[var(--bg-surface)] border-[var(--border-subtle)] hover:border-[var(--border-medium)]"
-                } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/30 mb-3">
-                    <Film className="w-5 h-5" />
-                  </div>
-                  {mode === "local" && (
-                    <div className="w-5 h-5 rounded-full bg-[var(--accent)] text-white flex items-center justify-center">
-                      <Check className="w-3.5 h-3.5" />
-                    </div>
-                  )}
-                </div>
-                <h3 className="text-sm font-semibold text-[var(--text-primary)]">Local Video Sync</h3>
-                <p className="text-xs text-[var(--text-secondary)] mt-1.5 leading-relaxed">
-                  Synchronize playback of local video files stored on member devices via WebRTC.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Notice */}
-          <div className="flex items-center gap-2.5 p-3.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs text-[var(--text-secondary)]">
-            <ShieldAlert className="w-4 h-4 text-indigo-400 shrink-0" />
-            <span>As the creator, you will automatically be assigned as Host with media control privileges.</span>
-          </div>
-
-          {/* Submit Action */}
-          <div className="pt-2 flex items-center justify-end gap-3 border-t border-[var(--border-subtle)]">
-            <Link href="/">
-              <Button variant="outline" type="button" disabled={isSubmitting}>
-                Cancel
-              </Button>
-            </Link>
-            <Button type="submit" isLoading={isSubmitting} className="min-w-[140px]">
-              Create Room
-            </Button>
-          </div>
-        </form>
-      </Card>
+        {/* Submit */}
+        <div className="space-y-3 pt-2">
+          <Button
+            type="submit"
+            isLoading={isSubmitting}
+            size="lg"
+            className="w-full text-sm font-medium"
+          >
+            Host room →
+          </Button>
+          <p className="text-center text-[11px] text-[var(--text-muted)]">
+            You will be assigned as host with playback control privileges.
+          </p>
+        </div>
+      </form>
     </div>
   );
 }

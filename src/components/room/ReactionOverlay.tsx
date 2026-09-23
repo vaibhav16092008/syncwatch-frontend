@@ -17,16 +17,15 @@ export const ReactionOverlay: React.FC<ReactionOverlayProps> = ({ reactions }) =
   return (
     <div className="absolute inset-0 pointer-events-none z-30 overflow-hidden">
       {reactions.map((r, index) => {
-        // Vary horizontal position based on index / hash
         const leftPercent = 15 + ((index * 23) % 70);
         return (
           <div
             key={r.keyId}
-            className="absolute bottom-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--bg-elevated)]/95 border border-[var(--border-medium)] shadow-2xl text-xs text-[var(--text-primary)] animate-float-up motion-reduce:animate-none backdrop-blur-md"
+            className="absolute bottom-6 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--bg-surface)]/95 border border-[var(--border-medium)] shadow-xl text-xs text-[var(--text-primary)] animate-float-up motion-reduce:animate-none backdrop-blur-md"
             style={{ left: `${leftPercent}%` }}
           >
-            <span className="text-base sm:text-xl animate-bounce motion-reduce:animate-none">{r.emoji}</span>
-            <span className="font-semibold text-[var(--text-secondary)] text-[11px]">
+            <span className="text-base sm:text-xl select-none">{r.emoji}</span>
+            <span className="font-medium text-[var(--text-secondary)] text-[11px]">
               {r.displayName}
             </span>
           </div>

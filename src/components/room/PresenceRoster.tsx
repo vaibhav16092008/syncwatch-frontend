@@ -2,8 +2,6 @@
 
 import React from "react";
 import { Users, Crown, Wifi, WifiOff } from "lucide-react";
-import { Card } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
 import { PresenceUser, RoomUser } from "@/types/api";
 
 interface PresenceRosterProps {
@@ -31,24 +29,24 @@ export const PresenceRoster: React.FC<PresenceRosterProps> = ({
   };
 
   return (
-    <Card className="space-y-4 border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
+    <div className="rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-4 space-y-3 shadow-sm">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
+      <div className="flex items-center justify-between border-b border-[var(--border-subtle)]/70 pb-2.5">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-[var(--accent-subtle)] text-indigo-400 border border-[var(--accent)]/30">
-            <Users className="w-4 h-4" />
-          </div>
-          <h3 className="text-sm font-bold text-[var(--text-primary)]">Room Members</h3>
+          <Users className="w-3.5 h-3.5 text-[var(--accent)]" />
+          <h3 className="font-display text-sm font-medium text-[var(--text-primary)]">
+            Audience
+          </h3>
         </div>
-        <Badge variant="primary" className="text-[11px]">
-          {connectedCount} / {maxCapacity} Online
-        </Badge>
+        <span className="text-[11px] text-[var(--text-muted)]">
+          {connectedCount} / {maxCapacity} present
+        </span>
       </div>
 
       {/* User List */}
-      <div className="space-y-2 max-h-[360px] overflow-y-auto pr-1">
+      <div className="space-y-1.5 max-h-[280px] overflow-y-auto pr-1">
         {users.length === 0 ? (
-          <p className="text-xs text-[var(--text-muted)] text-center py-6">No participants connected yet.</p>
+          <p className="text-xs text-[var(--text-muted)] text-center py-4">No audience present yet.</p>
         ) : (
           users.map((user) => {
             const isCurrent = currentUserId && (user.userId === currentUserId || user.id === currentUserId);
@@ -59,60 +57,50 @@ export const PresenceRoster: React.FC<PresenceRosterProps> = ({
             return (
               <div
                 key={user.userId || user.id}
-                className={`flex items-center justify-between p-2.5 rounded-xl border transition-all duration-200 ${
+                className={`flex items-center justify-between p-2 rounded-md transition-colors ${
                   isCurrent
-                    ? "bg-[var(--accent-subtle)] border-[var(--accent)]/30"
-                    : "bg-[var(--bg-surface)] border-[var(--border-subtle)] hover:border-[var(--border-medium)]"
+                    ? "bg-[var(--accent-subtle)] border border-[var(--accent)]/30"
+                    : "bg-[var(--bg-base)]/50 border border-[var(--border-subtle)]/60"
                 }`}
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   {/* Avatar Initials with Status Dot */}
                   <div className="relative shrink-0">
-                    <div className="w-8 h-8 rounded-full bg-[var(--bg-hover)] border border-[var(--border-medium)] flex items-center justify-center text-xs font-bold text-[var(--text-primary)] select-none">
+                    <div className="w-7 h-7 rounded-full bg-[var(--bg-surface-hover)] border border-[var(--border-medium)] flex items-center justify-center text-[11px] font-medium text-[var(--text-primary)] select-none">
                       {initials}
                     </div>
                     <span
-                      className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[var(--bg-elevated)] ${
-                        isConnected ? "bg-emerald-500" : "bg-amber-500"
+                      className={`absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full border border-[var(--bg-surface)] ${
+                        isConnected ? "bg-emerald-400" : "bg-amber-400"
                       }`}
                     />
                   </div>
 
-                  {/* Name & Badges */}
+                  {/* Name */}
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-semibold text-[var(--text-primary)] truncate">
+                      <span className="text-xs font-medium text-[var(--text-primary)] truncate">
                         {user.displayName || "Anonymous"}
                       </span>
                       {isCurrent && (
-                        <span className="text-[10px] text-indigo-400 font-medium">(You)</span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-1 text-[10px] text-[var(--text-muted)]">
-                      {isConnected ? (
-                        <span className="text-emerald-400 flex items-center gap-0.5">
-                          <Wifi className="w-3 h-3" /> Connected
-                        </span>
-                      ) : (
-                        <span className="text-amber-400 flex items-center gap-0.5">
-                          <WifiOff className="w-3 h-3" /> Disconnected
-                        </span>
+                        <span className="text-[10px] text-[var(--accent)]">(You)</span>
                       )}
                     </div>
                   </div>
                 </div>
 
-                {/* Role Badge */}
-                <div className="shrink-0">
-                  {isHost ? (
-                    <Badge variant="warning" className="text-[10px] gap-1 px-2 py-0.5">
-                      <Crown className="w-3 h-3 text-amber-400 fill-amber-400/20" />
+                {/* Role / Connection indicator */}
+                <div className="shrink-0 flex items-center gap-1.5">
+                  {isHost && (
+                    <span className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-amber-500/10 text-amber-300 border border-amber-500/20">
+                      <Crown className="w-3 h-3 text-amber-400" />
                       <span>Host</span>
-                    </Badge>
-                  ) : (
-                    <Badge variant="neutral" className="text-[10px] px-2 py-0.5">
-                      Member
-                    </Badge>
+                    </span>
+                  )}
+                  {!isConnected && (
+                    <span title="Disconnected">
+                      <WifiOff className="w-3 h-3 text-amber-400" />
+                    </span>
                   )}
                 </div>
               </div>
@@ -120,6 +108,6 @@ export const PresenceRoster: React.FC<PresenceRosterProps> = ({
           })
         )}
       </div>
-    </Card>
+    </div>
   );
 };

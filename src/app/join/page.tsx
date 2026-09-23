@@ -3,8 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogIn, ArrowLeft, Hash, User, ShieldAlert, PlusCircle } from "lucide-react";
-import { Card } from "@/components/ui/Card";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
@@ -77,7 +76,7 @@ export default function JoinRoomPage() {
           return;
         }
 
-        // Preserve any existing session tokens if re-joining same room, otherwise save room & display name
+        // Preserve any existing session tokens if re-joining same room
         const existingSession = session?.roomId === targetRoomId ? session : null;
 
         setSession({
@@ -101,38 +100,35 @@ export default function JoinRoomPage() {
   };
 
   return (
-    <div className="max-w-xl mx-auto space-y-6 py-6">
-      {/* Back Navigation */}
+    <div className="max-w-md mx-auto space-y-8 py-4 sm:py-8">
+      {/* Back link */}
       <Link
         href="/"
-        className="inline-flex items-center gap-2 text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+        className="inline-flex items-center gap-2 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
       >
-        <ArrowLeft className="w-4 h-4" />
+        <ArrowLeft className="w-3.5 h-3.5" />
         <span>Back to Home</span>
       </Link>
 
-      <Card className="space-y-6 shadow-xl border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-6 sm:p-8">
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-5">
-          <div className="flex items-center gap-3.5">
-            <div className="p-2.5 rounded-xl bg-[var(--accent-subtle)] text-indigo-400 border border-[var(--accent)]/30">
-              <LogIn className="w-6 h-6" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">Join Watch Room</h1>
-              <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-0.5">Enter a room code to watch together</p>
-            </div>
-          </div>
-        </div>
+      {/* Header */}
+      <div className="space-y-2">
+        <h1 className="font-display text-3xl sm:text-4xl font-normal text-[var(--text-primary)] tracking-wide">
+          Join a screening
+        </h1>
+        <p className="text-sm text-[var(--text-secondary)]">
+          Enter a room code to take your seat.
+        </p>
+      </div>
 
-        {/* Error Alert */}
-        {errorMessage && <ErrorMessage message={errorMessage} title="Cannot Join Room" />}
+      {/* Error Alert */}
+      {errorMessage && <ErrorMessage message={errorMessage} title="Cannot Join Room" />}
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Room Code Input */}
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Room Code */}
+        <div className="space-y-1.5">
           <Input
-            label="Room Code"
+            label="Room code"
             placeholder="SYNC-A1B2C"
             value={roomCode}
             onChange={(e) => {
@@ -143,62 +139,53 @@ export default function JoinRoomPage() {
               }
             }}
             error={validationErrors.roomCode}
-            helperText="Format: SYNC-XXXXX (case-insensitive)"
-            icon={<Hash className="w-4 h-4" />}
+            helperText="Format: SYNC-XXXXX"
             disabled={isSubmitting}
             maxLength={10}
-            className="font-mono tracking-wider"
+            className="font-mono text-base tracking-widest uppercase placeholder:normal-case placeholder:tracking-normal placeholder:font-sans"
             required
           />
+        </div>
 
-          {/* Display Name Input */}
-          <Input
-            label="Your Display Name"
-            placeholder="e.g. Bob"
-            value={displayName}
-            onChange={(e) => {
-              setDisplayName(e.target.value);
-              if (validationErrors.displayName) {
-                setValidationErrors((prev) => ({ ...prev, displayName: undefined }));
-              }
-            }}
-            error={validationErrors.displayName}
-            helperText="2 to 24 characters. Visible to all members in the room."
-            icon={<User className="w-4 h-4" />}
-            disabled={isSubmitting}
-            maxLength={24}
-            required
-          />
+        {/* Your Name */}
+        <Input
+          label="Your name"
+          placeholder="e.g. Bob"
+          value={displayName}
+          onChange={(e) => {
+            setDisplayName(e.target.value);
+            if (validationErrors.displayName) {
+              setValidationErrors((prev) => ({ ...prev, displayName: undefined }));
+            }
+          }}
+          error={validationErrors.displayName}
+          helperText="2 to 24 characters. Visible to everyone in the room."
+          disabled={isSubmitting}
+          maxLength={24}
+          required
+        />
 
-          {/* Helper Notice */}
-          <div className="flex items-center gap-2.5 p-3.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs text-[var(--text-secondary)]">
-            <ShieldAlert className="w-4 h-4 text-indigo-400 shrink-0" />
-            <span>Room existence and access will be verified before entering.</span>
-          </div>
+        {/* Submit and Alt Link */}
+        <div className="space-y-4 pt-2">
+          <Button
+            type="submit"
+            isLoading={isSubmitting}
+            size="lg"
+            className="w-full text-sm font-medium"
+          >
+            Enter room →
+          </Button>
 
-          {/* Actions */}
-          <div className="pt-2 flex items-center justify-between border-t border-[var(--border-subtle)]">
+          <div className="text-center">
             <Link
               href="/create"
-              className="inline-flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
+              className="text-xs text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
             >
-              <PlusCircle className="w-4 h-4" />
-              <span>Need a room? Create one</span>
+              or host your own screening →
             </Link>
-
-            <div className="flex items-center gap-3">
-              <Link href="/">
-                <Button variant="outline" type="button" disabled={isSubmitting}>
-                  Cancel
-                </Button>
-              </Link>
-              <Button type="submit" isLoading={isSubmitting} className="min-w-[120px]">
-                Join Room
-              </Button>
-            </div>
           </div>
-        </form>
-      </Card>
+        </div>
+      </form>
     </div>
   );
 }
