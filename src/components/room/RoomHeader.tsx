@@ -46,11 +46,11 @@ export const RoomHeader: React.FC<RoomHeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-[var(--bg-base)]/95 border-b border-[var(--border-subtle)]/80 backdrop-blur-md transition-colors">
-      <div className="h-12 sm:h-14 px-3 sm:px-6 flex items-center justify-between gap-3 text-xs">
+    <header className="sticky top-0 z-40 bg-[var(--bg-base)]/95 border-b border-[var(--border-subtle)]/40 backdrop-blur-md transition-colors">
+      <div className="h-11 sm:h-12 px-3 sm:px-6 flex items-center justify-between gap-3 text-xs">
         {/* Left: Brand Wordmark + Separator + Room Title & Connection Indicator */}
         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-          <Link href="/" className="flex items-center gap-1.5 group shrink-0 min-h-[44px] flex items-center">
+          <Link href="/" className="flex items-center gap-1.5 group shrink-0 min-h-[44px]">
             <span className="font-display font-medium text-base sm:text-lg text-[var(--text-primary)] group-hover:text-white transition-colors tracking-wide">
               SyncWatch
             </span>
@@ -58,38 +58,38 @@ export const RoomHeader: React.FC<RoomHeaderProps> = ({
 
           <span className="text-[var(--border-medium)] select-none">/</span>
 
-          <h1 className="font-display font-medium text-sm sm:text-base text-[var(--text-primary)] truncate max-w-[140px] sm:max-w-[320px]">
+          <h1 className="font-display font-normal text-xs sm:text-sm text-[var(--text-primary)] truncate max-w-[140px] sm:max-w-[320px] tracking-wide">
             {roomState?.name || "Screening Room"}
           </h1>
 
-          <div className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)] shrink-0">
-            <span className={`w-2 h-2 rounded-full ${getStatusColor()}`} />
-            <span className="capitalize hidden md:inline">{connectionState}</span>
+          <div className="flex items-center gap-1.5 text-[10px] font-mono text-[var(--text-muted)] shrink-0 uppercase tracking-wider">
+            <span className={`w-1.5 h-1.5 rounded-full ${getStatusColor()}`} />
+            <span className="hidden md:inline">{connectionState}</span>
           </div>
         </div>
 
       {/* Right: Info Popover Toggle & Leave Action */}
-      <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           {/* Info Toggle Button */}
         <div className="relative">
           <button
             type="button"
             onClick={() => setShowInfoPopover(!showInfoPopover)}
-            className="flex items-center gap-1.5 py-1.5 px-2.5 min-h-[44px] rounded-md bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-hover)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 py-1 px-2.5 min-h-[44px] rounded-[2px] bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-hover)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
             title="Room details"
             aria-label="Room details"
           >
             <Info className="w-3.5 h-3.5 text-[var(--accent)]" />
-            <span className="font-mono text-[11px] hidden sm:inline">
-              {roomState?.id || "Details"}
+            <span className="font-mono text-[11px] hidden sm:inline tracking-wider">
+              {roomState?.id || "DETAILS"}
             </span>
           </button>
 
           {/* Info Popover Modal/Card */}
           {showInfoPopover && (
-            <div className="absolute right-0 top-full mt-2 w-72 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-xl p-4 z-50 space-y-3">
+            <div className="absolute right-0 top-full mt-2 w-72 rounded-[2px] bg-[var(--bg-surface)] border border-[var(--border-subtle)] shadow-2xl p-4 z-50 space-y-3">
               <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-2.5">
-                <span className="font-medium text-[var(--text-primary)] text-xs">Screening Details</span>
+                <span className="font-mono uppercase tracking-wider text-[var(--text-primary)] text-[11px]">Screening Details</span>
                 <button
                   type="button"
                   onClick={() => setShowInfoPopover(false)}
@@ -101,11 +101,11 @@ export const RoomHeader: React.FC<RoomHeaderProps> = ({
 
               {/* Room Code with Copy */}
               <div className="space-y-1">
-                <span className="text-[10px] uppercase text-[var(--text-muted)] tracking-wider">
-                  Room Code
+                <span className="text-[10px] uppercase font-mono text-[var(--text-muted)] tracking-wider">
+                  Access Code
                 </span>
-                <div className="flex items-center justify-between p-2 rounded-md bg-[var(--bg-void)] border border-[var(--border-subtle)]">
-                  <span className="font-mono font-medium text-xs text-[var(--text-primary)] tracking-wider">
+                <div className="flex items-center justify-between p-2 rounded-[2px] bg-[var(--bg-void)] border border-[var(--border-subtle)]">
+                  <span className="font-mono font-medium text-xs text-[var(--text-primary)] tracking-widest">
                     {roomState?.id || "N/A"}
                   </span>
                   <button

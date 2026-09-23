@@ -94,23 +94,26 @@ export default function CreateRoomPage() {
   };
 
   return (
-    <div className="max-w-xl mx-auto space-y-8 py-4 sm:py-8">
+    <div className="cinema-fade-in max-w-xl mx-auto space-y-8 py-6 sm:py-12 relative">
+      {/* Ambient background glow */}
+      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-full max-w-lg h-72 screening-glow pointer-events-none -z-10 opacity-70" />
+
       {/* Back link */}
       <Link
         href="/"
-        className="inline-flex items-center gap-2 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+        className="inline-flex items-center gap-2 text-xs font-mono tracking-wider text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors py-1 min-h-[44px]"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
-        <span>Back to Home</span>
+        <span>RETURN TO LOBBY</span>
       </Link>
 
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="font-display text-3xl sm:text-4xl font-normal text-[var(--text-primary)] tracking-wide">
+        <h1 className="font-display text-4xl sm:text-5xl font-normal text-[var(--text-primary)] tracking-wide leading-[1.05]">
           Host a screening
         </h1>
         <p className="text-sm text-[var(--text-secondary)]">
-          Set your name and choose how to watch.
+          Choose your format. Name your screening room.
         </p>
       </div>
 
@@ -121,7 +124,7 @@ export default function CreateRoomPage() {
       <form onSubmit={handleSubmit} className="space-y-7">
         {/* Your Name */}
         <Input
-          label="Your name"
+          label="Host display name"
           placeholder="e.g. Alex"
           value={displayName}
           onChange={(e) => {
@@ -131,7 +134,7 @@ export default function CreateRoomPage() {
             }
           }}
           error={validationErrors.displayName}
-          helperText="2 to 24 characters. Visible to all members."
+          helperText="Visible to all screening participants (2–24 characters)."
           disabled={isSubmitting}
           maxLength={24}
           required
@@ -139,8 +142,8 @@ export default function CreateRoomPage() {
 
         {/* Room Name */}
         <Input
-          label="Room name"
-          placeholder="e.g. Friday Night Movie"
+          label="Screening room title"
+          placeholder="e.g. Friday Night Screening"
           value={name}
           onChange={(e) => {
             setName(e.target.value);
@@ -149,39 +152,37 @@ export default function CreateRoomPage() {
             }
           }}
           error={validationErrors.name}
-          helperText="1 to 50 characters."
+          helperText="The title displayed on the auditorium marquee."
           disabled={isSubmitting}
           maxLength={50}
           required
         />
 
-        {/* Mode Selector - Tall Panels */}
-        <div className="space-y-2">
-          <label className="block text-xs sm:text-sm font-medium text-[var(--text-secondary)]">
-            Screening mode
+        {/* Mode Selector - Hard-edged Left-Accent Panels */}
+        <div className="space-y-2.5">
+          <label className="block text-xs font-mono uppercase tracking-wider text-[var(--text-secondary)]">
+            Screening Format
           </label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* YouTube Mode */}
             <div
               onClick={() => !isSubmitting && setMode("youtube")}
-              className={`p-4 rounded-lg cursor-pointer transition-all duration-200 border flex flex-col justify-between min-h-[120px] ${
+              className={`p-4 rounded-[2px] cursor-pointer transition-all duration-150 border flex flex-col justify-between min-h-[110px] ${
                 mode === "youtube"
-                  ? "bg-[#14120e] border-[var(--accent)] text-[var(--text-primary)]"
-                  : "bg-[var(--bg-surface)]/60 border-[var(--border-subtle)] opacity-70 hover:opacity-100 hover:border-[var(--border-medium)]"
+                  ? "bg-[#14120e] border-[var(--border-subtle)] border-l-[3px] border-l-[var(--accent)] text-[var(--text-primary)] shadow-sm"
+                  : "bg-[var(--bg-surface)]/60 border-[var(--border-subtle)] border-l-[3px] border-l-transparent opacity-65 hover:opacity-95 hover:border-[var(--border-medium)]"
               } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               <div className="flex items-center justify-between">
-                <Tv className="w-5 h-5 text-[var(--accent)]" />
-                {mode === "youtube" && (
-                  <span className="text-[10px] font-mono tracking-wider text-[var(--accent)] bg-[var(--accent)]/10 px-2 py-0.5 rounded border border-[var(--accent)]/30 uppercase">
-                    Selected
-                  </span>
-                )}
+                <Tv className={`w-4 h-4 ${mode === "youtube" ? "text-[var(--accent)]" : "text-[var(--text-muted)]"}`} />
+                <span className="text-[10px] font-mono tracking-widest uppercase text-[var(--text-muted)]">
+                  FORMAT 01
+                </span>
               </div>
               <div className="space-y-1 mt-3">
                 <h3 className="text-sm font-medium text-[var(--text-primary)]">YouTube Sync</h3>
                 <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                  Synchronize YouTube video playback in real time.
+                  Synchronize YouTube streams in real time.
                 </p>
               </div>
             </div>
@@ -189,24 +190,22 @@ export default function CreateRoomPage() {
             {/* Local Video Mode */}
             <div
               onClick={() => !isSubmitting && setMode("local")}
-              className={`p-4 rounded-lg cursor-pointer transition-all duration-200 border flex flex-col justify-between min-h-[120px] ${
+              className={`p-4 rounded-[2px] cursor-pointer transition-all duration-150 border flex flex-col justify-between min-h-[110px] ${
                 mode === "local"
-                  ? "bg-[#14120e] border-[var(--accent)] text-[var(--text-primary)]"
-                  : "bg-[var(--bg-surface)]/60 border-[var(--border-subtle)] opacity-70 hover:opacity-100 hover:border-[var(--border-medium)]"
+                  ? "bg-[#14120e] border-[var(--border-subtle)] border-l-[3px] border-l-[var(--accent)] text-[var(--text-primary)] shadow-sm"
+                  : "bg-[var(--bg-surface)]/60 border-[var(--border-subtle)] border-l-[3px] border-l-transparent opacity-65 hover:opacity-95 hover:border-[var(--border-medium)]"
               } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               <div className="flex items-center justify-between">
-                <Film className="w-5 h-5 text-[var(--accent)]" />
-                {mode === "local" && (
-                  <span className="text-[10px] font-mono tracking-wider text-[var(--accent)] bg-[var(--accent)]/10 px-2 py-0.5 rounded border border-[var(--accent)]/30 uppercase">
-                    Selected
-                  </span>
-                )}
+                <Film className={`w-4 h-4 ${mode === "local" ? "text-[var(--accent)]" : "text-[var(--text-muted)]"}`} />
+                <span className="text-[10px] font-mono tracking-widest uppercase text-[var(--text-muted)]">
+                  FORMAT 02
+                </span>
               </div>
               <div className="space-y-1 mt-3">
                 <h3 className="text-sm font-medium text-[var(--text-primary)]">Local Video</h3>
                 <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                  Synchronize local video files via peer-to-peer WebRTC.
+                  Direct peer-to-peer WebRTC file streaming.
                 </p>
               </div>
             </div>
@@ -214,17 +213,17 @@ export default function CreateRoomPage() {
         </div>
 
         {/* Submit */}
-        <div className="space-y-3 pt-2">
+        <div className="space-y-3 pt-3">
           <Button
             type="submit"
             isLoading={isSubmitting}
             size="lg"
-            className="w-full text-sm font-medium"
+            className="w-full text-sm font-medium tracking-wide py-3"
           >
-            Host room →
+            Create screening room →
           </Button>
-          <p className="text-center text-[11px] text-[var(--text-muted)]">
-            You will be assigned as host with playback control privileges.
+          <p className="text-center text-[11px] font-mono text-[var(--text-muted)] tracking-wider">
+            HOST CONTROLS INITIALIZED UPON ENTRY
           </p>
         </div>
       </form>

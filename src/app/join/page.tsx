@@ -100,23 +100,26 @@ export default function JoinRoomPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto space-y-8 py-4 sm:py-8">
+    <div className="cinema-fade-in max-w-md mx-auto space-y-8 py-6 sm:py-12 relative">
+      {/* Ambient background glow */}
+      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-full max-w-md h-72 screening-glow pointer-events-none -z-10 opacity-70" />
+
       {/* Back link */}
       <Link
         href="/"
-        className="inline-flex items-center gap-2 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+        className="inline-flex items-center gap-2 text-xs font-mono tracking-wider text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors py-1 min-h-[44px]"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
-        <span>Back to Home</span>
+        <span>RETURN TO LOBBY</span>
       </Link>
 
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="font-display text-3xl sm:text-4xl font-normal text-[var(--text-primary)] tracking-wide">
+        <h1 className="font-display text-4xl sm:text-5xl font-normal text-[var(--text-primary)] tracking-wide leading-[1.05]">
           Join a screening
         </h1>
         <p className="text-sm text-[var(--text-secondary)]">
-          Enter a room code to take your seat.
+          Enter your screening access pass to take your seat.
         </p>
       </div>
 
@@ -128,7 +131,7 @@ export default function JoinRoomPage() {
         {/* Room Code */}
         <div className="space-y-1.5">
           <Input
-            label="Room code"
+            label="Screening access pass"
             placeholder="SYNC-A1B2C"
             value={roomCode}
             onChange={(e) => {
@@ -139,17 +142,17 @@ export default function JoinRoomPage() {
               }
             }}
             error={validationErrors.roomCode}
-            helperText="Format: SYNC-XXXXX"
+            helperText="Format: SYNC-XXXXX (issued by host)"
             disabled={isSubmitting}
             maxLength={10}
-            className="font-mono text-base tracking-widest uppercase placeholder:normal-case placeholder:tracking-normal placeholder:font-sans"
+            className="font-mono text-lg tracking-[0.16em] uppercase placeholder:normal-case placeholder:tracking-normal placeholder:font-sans py-3"
             required
           />
         </div>
 
         {/* Your Name */}
         <Input
-          label="Your name"
+          label="Your display name"
           placeholder="e.g. Bob"
           value={displayName}
           onChange={(e) => {
@@ -159,22 +162,25 @@ export default function JoinRoomPage() {
             }
           }}
           error={validationErrors.displayName}
-          helperText="2 to 24 characters. Visible to everyone in the room."
+          helperText="2 to 24 characters. Visible to everyone in the auditorium."
           disabled={isSubmitting}
           maxLength={24}
           required
         />
 
         {/* Submit */}
-        <div className="pt-2">
+        <div className="space-y-3 pt-3">
           <Button
             type="submit"
             isLoading={isSubmitting}
             size="lg"
-            className="w-full text-sm font-medium"
+            className="w-full text-sm font-medium tracking-wide py-3"
           >
-            Enter room →
+            Enter screening room →
           </Button>
+          <p className="text-center text-[11px] font-mono text-[var(--text-muted)] tracking-wider">
+            SYNCHRONIZED AUDITORIUM ACCESS
+          </p>
         </div>
       </form>
     </div>

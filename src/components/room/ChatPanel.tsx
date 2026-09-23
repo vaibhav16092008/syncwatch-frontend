@@ -78,18 +78,18 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-[520px] rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] overflow-hidden shadow-sm">
+    <div className="flex flex-col h-[520px] rounded-[2px] bg-[var(--bg-surface)] border border-[var(--border-subtle)] overflow-hidden shadow-sm">
       {/* Header */}
       <div className="p-3 border-b border-[var(--border-subtle)]/70 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <MessageSquare className="w-3.5 h-3.5 text-[var(--accent)]" />
-          <h3 className="font-display text-sm font-medium text-[var(--text-primary)]">
-            Screening Chat
+          <h3 className="font-mono text-xs uppercase tracking-wider text-[var(--text-primary)]">
+            Auditorium Chat
           </h3>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[11px] text-[var(--text-muted)]">
-            {messages.length}
+          <span className="text-[10px] font-mono text-[var(--text-muted)] tracking-wider">
+            {messages.length} LOGS
           </span>
           {onClose && (
             <button
@@ -107,12 +107,12 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
       {/* Message List */}
       <div
         ref={containerRef}
-        className="flex-1 p-3 overflow-y-auto space-y-3"
+        className="flex-1 p-3 overflow-y-auto space-y-2.5"
       >
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center p-6 text-[var(--text-muted)] space-y-1">
-            <p className="text-xs text-[var(--text-secondary)]">No messages yet</p>
-            <p className="text-[11px] text-[var(--text-muted)]">Whisper to everyone in the room</p>
+            <p className="text-xs text-[var(--text-secondary)] font-mono uppercase tracking-wider">Auditorium Quiet</p>
+            <p className="text-[11px] text-[var(--text-muted)]">Live message feed appears here.</p>
           </div>
         ) : (
           messages.map((msg) => {
@@ -122,20 +122,20 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
                 key={msg.id}
                 className={`flex flex-col ${isMe ? "items-end" : "items-start"} space-y-1`}
               >
-                <div className="flex items-center gap-1.5 px-1 text-[11px]">
+                <div className="flex items-center gap-1.5 px-1 text-[10px] font-mono">
                   <span
                     className={`font-medium ${
                       isMe ? "text-[var(--accent)]" : "text-[var(--text-secondary)]"
                     }`}
                   >
-                    {msg.displayName} {isMe && "(You)"}
+                    {msg.displayName} {isMe && "(YOU)"}
                   </span>
                   <span className="text-[10px] text-[var(--text-muted)]">
                     {formatTime(msg.createdAt)}
                   </span>
                 </div>
                 <div
-                  className={`max-w-[85%] rounded-lg px-3 py-1.5 text-xs leading-relaxed break-words shadow-sm ${
+                  className={`max-w-[85%] rounded-[2px] px-3 py-1.5 text-xs leading-relaxed break-words ${
                     isMe
                       ? "bg-[var(--accent)] text-white"
                       : "bg-[var(--bg-base)] text-[var(--text-primary)] border border-[var(--border-subtle)]"
@@ -175,9 +175,9 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
             onKeyDown={handleKeyDown}
             disabled={isSending}
             maxLength={MAX_CHAT_LENGTH}
-            className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-md pl-3 pr-10 py-1.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--border-focus)] disabled:opacity-50"
+            className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-[2px] pl-3 pr-10 py-1.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--border-focus)] disabled:opacity-50"
           />
-          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-[var(--text-muted)] pointer-events-none">
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-[var(--text-muted)] pointer-events-none font-mono">
             {inputMessage.length}/{MAX_CHAT_LENGTH}
           </span>
         </div>

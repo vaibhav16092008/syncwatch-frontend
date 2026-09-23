@@ -598,14 +598,14 @@ export default function RoomPage({ params }: RoomPageProps) {
   // Render Case 3: Initializing Loading Screen
   if (isInitializing) {
     return (
-      <div className="max-w-md mx-auto space-y-4 py-24 text-center">
+      <div className="cinema-fade-in max-w-md mx-auto space-y-4 py-24 text-center">
         <Spinner size="lg" className="mx-auto" />
         <div className="space-y-1.5">
-          <h2 className="font-display text-xl font-normal text-[var(--text-primary)] tracking-wide">
+          <h2 className="font-display text-2xl font-normal text-[var(--text-primary)] tracking-wide">
             Entering Screening Room
           </h2>
-          <p className="text-xs text-[var(--text-muted)]">
-            Connecting socket to <span className="font-mono text-[var(--accent)]">{roomIdFromRoute}</span>...
+          <p className="text-xs text-[var(--text-muted)] font-mono">
+            ESTABLISHING AUDITORIUM FEED • <span className="text-[var(--accent)]">{roomIdFromRoute}</span>
           </p>
         </div>
       </div>
@@ -614,7 +614,7 @@ export default function RoomPage({ params }: RoomPageProps) {
 
   // Render Case 4: Active Watch Room View (Theater Layout)
   return (
-    <div className="space-y-3 pb-8">
+    <div className="cinema-fade-in space-y-2.5 pb-8">
       {/* Room Header Toolbar */}
       <RoomHeader
         roomState={roomState}
@@ -632,11 +632,11 @@ export default function RoomPage({ params }: RoomPageProps) {
       />
 
       {/* Theater Layout: Video Stage + Collapsible Sidebar */}
-      <div className="flex flex-col lg:flex-row gap-4 items-start min-w-0">
+      <div className="flex flex-col lg:flex-row gap-3 items-start min-w-0">
         {/* Main Stage (Video Surface, Controls & Micro-Tools) */}
-        <div className="flex-1 min-w-0 space-y-3 w-full">
-          {/* Video Container (Hard rectangular edges, 16:9 ratio) */}
-          <div className="relative w-full aspect-video bg-black rounded-sm overflow-hidden border border-[var(--border-subtle)] screen-shadow">
+        <div className="flex-1 min-w-0 space-y-2 w-full">
+          {/* Video Container (Hard rectangular flush projection screen) */}
+          <div className="relative w-full aspect-video bg-black rounded-none overflow-hidden screen-shadow">
             {/* Ephemeral Reaction Overlay */}
             <ReactionOverlay reactions={reactions} />
 
@@ -707,12 +707,12 @@ export default function RoomPage({ params }: RoomPageProps) {
                 className="w-full max-w-sm h-full bg-[#0d0c0a] p-3 flex flex-col space-y-2 border-l border-[#23201b] shadow-2xl animate-in slide-in-from-right duration-200"
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="flex items-center justify-between p-1 rounded-md bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs">
+                <div className="flex items-center justify-between p-1 rounded-[2px] bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs">
                   <div className="flex items-center gap-1">
                     <button
                       type="button"
                       onClick={() => setActiveSidebarTab("chat")}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs transition-colors cursor-pointer min-h-[44px] sm:min-h-[32px] ${
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[2px] text-xs transition-colors cursor-pointer min-h-[44px] sm:min-h-[32px] ${
                         activeSidebarTab === "chat"
                           ? "bg-[var(--accent)] text-white font-medium"
                           : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
@@ -726,7 +726,7 @@ export default function RoomPage({ params }: RoomPageProps) {
                     <button
                       type="button"
                       onClick={() => setActiveSidebarTab("audience")}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs transition-colors cursor-pointer min-h-[44px] sm:min-h-[32px] ${
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[2px] text-xs transition-colors cursor-pointer min-h-[44px] sm:min-h-[32px] ${
                         activeSidebarTab === "audience"
                           ? "bg-[var(--accent)] text-white font-medium"
                           : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
@@ -772,12 +772,12 @@ export default function RoomPage({ params }: RoomPageProps) {
 
             {/* Desktop Inline Sidebar Column */}
             <div className="hidden lg:block w-80 sm:w-96 shrink-0 space-y-2">
-              <div className="flex items-center justify-between p-1 rounded-md bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs">
+              <div className="flex items-center justify-between p-1 rounded-[2px] bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs">
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
                     onClick={() => setActiveSidebarTab("chat")}
-                    className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs transition-colors cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-[2px] text-xs transition-colors cursor-pointer ${
                       activeSidebarTab === "chat"
                         ? "bg-[var(--accent)] text-white font-medium"
                         : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
@@ -791,7 +791,7 @@ export default function RoomPage({ params }: RoomPageProps) {
                   <button
                     type="button"
                     onClick={() => setActiveSidebarTab("audience")}
-                    className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs transition-colors cursor-pointer ${
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-[2px] text-xs transition-colors cursor-pointer ${
                       activeSidebarTab === "audience"
                         ? "bg-[var(--accent)] text-white font-medium"
                         : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"

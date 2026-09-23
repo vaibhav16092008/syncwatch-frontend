@@ -60,7 +60,7 @@ export const ScreeningConsole: React.FC<ScreeningConsoleProps> = ({
   return (
     <div className="space-y-2">
       {/* Unified Low-Profile Cinema Console Strip */}
-      <div className="p-2 sm:p-2.5 rounded-lg bg-[#0d0c0a] border border-[#23201b] flex flex-wrap items-center justify-between gap-3 shadow-inner">
+      <div className="p-2 sm:p-2.5 rounded-[2px] bg-[#0d0c0a] border border-[#23201b] flex flex-wrap items-center justify-between gap-3 shadow-inner">
         {/* Left: Quick Reaction Strip */}
         <div className="flex items-center gap-1 overflow-x-auto max-w-full py-0.5 scrollbar-none">
           <span className="text-[10px] text-[var(--text-muted)] font-mono uppercase tracking-wider px-1 shrink-0 hidden sm:inline">
@@ -73,7 +73,7 @@ export const ScreeningConsole: React.FC<ScreeningConsoleProps> = ({
               onClick={() => onSendReaction(emoji)}
               disabled={disabled}
               aria-label={`Send ${emoji} reaction`}
-              className="min-w-[44px] min-h-[44px] sm:min-w-[36px] sm:min-h-[36px] flex items-center justify-center rounded hover:bg-[#1a1814] active:scale-125 transition-all text-base sm:text-lg select-none cursor-pointer disabled:opacity-40"
+              className="min-w-[44px] min-h-[44px] sm:min-w-[36px] sm:min-h-[36px] flex items-center justify-center rounded-[2px] hover:bg-[#1a1814] active:scale-125 transition-all text-base sm:text-lg select-none cursor-pointer disabled:opacity-40"
             >
               {emoji}
             </button>
@@ -88,11 +88,11 @@ export const ScreeningConsole: React.FC<ScreeningConsoleProps> = ({
             onClick={onToggleCamera}
             disabled={disabled || permissionStatus === "requesting"}
             title={isCameraOn ? "Turn camera off" : "Turn camera on"}
-            className={`min-h-[44px] sm:min-h-[36px] px-3 rounded-md text-xs font-medium flex items-center gap-2 cursor-pointer transition-colors ${
+            className={`min-h-[44px] sm:min-h-[36px] px-3 rounded-[2px] text-xs font-medium flex items-center gap-2 cursor-pointer transition-colors ${
               isCameraOn
                 ? "bg-[var(--accent)] text-white hover:opacity-90"
                 : "bg-[#181612] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[#2d2922]"
-            } disabled:opacity-50`}
+            } disabled:opacity-50 font-mono`}
           >
             {isCameraOn ? <Video className="w-4 h-4 text-white" /> : <VideoOff className="w-4 h-4 text-[var(--text-muted)]" />}
             <span className="hidden xs:inline">{isCameraOn ? "Cam On" : "Cam Off"}</span>
@@ -104,11 +104,11 @@ export const ScreeningConsole: React.FC<ScreeningConsoleProps> = ({
             onClick={onToggleMic}
             disabled={disabled || permissionStatus === "requesting"}
             title={isMicOn ? "Mute microphone" : "Unmute microphone"}
-            className={`min-h-[44px] sm:min-h-[36px] px-3 rounded-md text-xs font-medium flex items-center gap-2 cursor-pointer transition-colors ${
+            className={`min-h-[44px] sm:min-h-[36px] px-3 rounded-[2px] text-xs font-medium flex items-center gap-2 cursor-pointer transition-colors ${
               isMicOn
                 ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-500/30"
                 : "bg-[#181612] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[#2d2922]"
-            } disabled:opacity-50`}
+            } disabled:opacity-50 font-mono`}
           >
             {isMicOn ? <Mic className="w-4 h-4 text-emerald-400" /> : <MicOff className="w-4 h-4 text-[var(--text-muted)]" />}
             <span className="hidden xs:inline">{isMicOn ? "Mic On" : "Mic Off"}</span>
@@ -119,16 +119,16 @@ export const ScreeningConsole: React.FC<ScreeningConsoleProps> = ({
             type="button"
             onClick={() => setIsFileDrawerOpen((prev) => !prev)}
             title="P2P File Transfer"
-            className={`min-h-[44px] sm:min-h-[36px] px-3 rounded-md text-xs font-medium flex items-center gap-2 cursor-pointer transition-colors ${
+            className={`min-h-[44px] sm:min-h-[36px] px-3 rounded-[2px] text-xs font-medium flex items-center gap-2 cursor-pointer transition-colors ${
               isFileDrawerOpen || receivedFiles.length > 0
                 ? "bg-[#1f1c17] text-[var(--accent)] border border-[var(--accent)]/40"
                 : "bg-[#181612] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[#2d2922]"
-            }`}
+            } font-mono`}
           >
             <FileUp className="w-4 h-4 text-[var(--accent)]" />
             <span className="hidden xs:inline">Files</span>
             {receivedFiles.length > 0 && (
-              <span className="px-1.5 py-0.5 rounded-full bg-[var(--accent)] text-white text-[10px]">
+              <span className="px-1.5 py-0.5 rounded-none bg-[var(--accent)] text-white text-[10px]">
                 {receivedFiles.length}
               </span>
             )}

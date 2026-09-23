@@ -59,7 +59,7 @@
     flex-direction: column;
     margin: 0;
     overflow-x: hidden;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.015em;
   }
 
   h1, h2, h3, .font-display, .font-hunin {
@@ -69,16 +69,41 @@
 
 /* Screening room ambient aura */
 .screening-glow {
-  background: radial-gradient(circle at 50% 30%, rgba(196, 125, 90, 0.08) 0%, transparent 70%);
+  background: radial-gradient(circle at 50% 30%, rgba(196, 125, 90, 0.12) 0%, transparent 70%);
 }
 
 .screening-beam {
-  background: conic-gradient(from 180deg at 50% 0%, transparent 35%, rgba(196, 125, 90, 0.06) 48%, rgba(212, 201, 184, 0.08) 50%, rgba(196, 125, 90, 0.06) 52%, transparent 65%);
+  background: conic-gradient(from 180deg at 50% 0%, transparent 35%, rgba(196, 125, 90, 0.08) 48%, rgba(212, 201, 184, 0.1) 50%, rgba(196, 125, 90, 0.08) 52%, transparent 65%);
 }
 
-/* Subtle frame shadow */
+/* Cinematic screen projection shadow */
 .screen-shadow {
-  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.7), 0 0 30px 0 rgba(196, 125, 90, 0.05);
+  box-shadow: 0 24px 60px -15px rgba(0, 0, 0, 0.95), 0 0 45px -5px rgba(196, 125, 90, 0.08), 0 1px 0 0 rgba(255, 255, 255, 0.04);
+}
+
+.screen-shadow-active {
+  box-shadow: 0 28px 70px -12px rgba(0, 0, 0, 0.98), 0 0 60px 0 rgba(196, 125, 90, 0.12);
+}
+
+/* Cinematic fade-in entrance */
+@keyframes cinemaFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cinema-fade-in {
+  animation: cinemaFadeIn 450ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Hard edge styling for cinema surfaces */
+.hard-edge {
+  border-radius: 0px !important;
 }
 
 /* Floating reaction animation */
@@ -107,17 +132,17 @@
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-base);
+  background: var(--bg-void);
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--border-medium);
-  border-radius: 9999px;
+  border-radius: 0;
 }
 
 ::-webkit-scrollbar-thumb:hover {

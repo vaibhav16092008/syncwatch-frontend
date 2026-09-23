@@ -56,17 +56,17 @@ export const MediaControls: React.FC<MediaControlsProps> = ({
   // Member View (Quiet, dignified status strip)
   if (!isHost) {
     return (
-      <div className="p-3 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div className="p-2.5 sm:p-3 rounded-[2px] bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-2 text-[var(--text-secondary)]">
           <Shield className="w-3.5 h-3.5 text-[var(--accent)]" />
-          <span>Host Controlled Playback</span>
+          <span className="font-mono text-[11px] uppercase tracking-wider">Host Controlled Playback</span>
         </div>
-        <div className="flex items-center gap-2 text-[var(--text-muted)] text-[11px]">
+        <div className="flex items-center gap-2 text-[var(--text-muted)] text-[11px] font-mono">
           <span className={`capitalize font-medium ${isPlaying ? "text-emerald-400" : "text-amber-400"}`}>
-            {isPlaying ? "● Playing" : "⏸ Paused"}
+            {isPlaying ? "● PLAYING" : "⏸ PAUSED"}
           </span>
           <span>•</span>
-          <span>{currentRate}x speed</span>
+          <span>{currentRate}x SPEED</span>
         </div>
       </div>
     );
@@ -74,7 +74,7 @@ export const MediaControls: React.FC<MediaControlsProps> = ({
 
   // Host View (Integrated control strip)
   return (
-    <div className="p-3 sm:p-3.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-3 shadow-sm">
+    <div className="p-2.5 sm:p-3 rounded-[2px] bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-2.5 shadow-sm">
       {/* Set Media Form */}
       <form onSubmit={handleSetMediaSubmit} className="flex items-center gap-2">
         <div className="relative flex-1 min-w-0">
@@ -90,7 +90,7 @@ export const MediaControls: React.FC<MediaControlsProps> = ({
               if (inputError) setInputError(null);
             }}
             disabled={isProcessing}
-            className="w-full rounded-md bg-[var(--bg-base)] border border-[var(--border-subtle)] pl-8 pr-3 py-1.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--border-focus)]"
+            className="w-full rounded-[2px] bg-[var(--bg-base)] border border-[var(--border-subtle)] pl-8 pr-3 py-1.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--border-focus)] font-mono"
           />
         </div>
         <Button

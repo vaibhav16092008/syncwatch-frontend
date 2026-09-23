@@ -29,24 +29,24 @@ export const PresenceRoster: React.FC<PresenceRosterProps> = ({
   };
 
   return (
-    <div className="rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-4 space-y-3 shadow-sm">
+    <div className="rounded-[2px] bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-4 space-y-3 shadow-sm">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-[var(--border-subtle)]/70 pb-2.5">
         <div className="flex items-center gap-2">
           <Users className="w-3.5 h-3.5 text-[var(--accent)]" />
-          <h3 className="font-display text-sm font-medium text-[var(--text-primary)]">
-            Audience
+          <h3 className="font-mono text-xs uppercase tracking-wider text-[var(--text-primary)]">
+            Audience Roster
           </h3>
         </div>
-        <span className="text-[11px] text-[var(--text-muted)]">
-          {connectedCount} / {maxCapacity} present
+        <span className="text-[10px] font-mono text-[var(--text-muted)] tracking-wider">
+          {connectedCount} / {maxCapacity} PRESENT
         </span>
       </div>
 
       {/* User List */}
       <div className="space-y-1.5 max-h-[280px] overflow-y-auto pr-1">
         {users.length === 0 ? (
-          <p className="text-xs text-[var(--text-muted)] text-center py-4">No audience present yet.</p>
+          <p className="text-xs text-[var(--text-muted)] text-center py-4 font-mono">No audience present yet.</p>
         ) : (
           users.map((user) => {
             const isCurrent = currentUserId && (user.userId === currentUserId || user.id === currentUserId);
@@ -57,7 +57,7 @@ export const PresenceRoster: React.FC<PresenceRosterProps> = ({
             return (
               <div
                 key={user.userId || user.id}
-                className={`flex items-center justify-between p-2 rounded-md transition-colors ${
+                className={`flex items-center justify-between p-2 rounded-[2px] transition-colors ${
                   isCurrent
                     ? "bg-[var(--accent-subtle)] border border-[var(--accent)]/30"
                     : "bg-[var(--bg-base)]/50 border border-[var(--border-subtle)]/60"
@@ -66,7 +66,7 @@ export const PresenceRoster: React.FC<PresenceRosterProps> = ({
                 <div className="flex items-center gap-2.5 min-w-0">
                   {/* Avatar Initials with Status Dot */}
                   <div className="relative shrink-0">
-                    <div className="w-7 h-7 rounded-full bg-[var(--bg-surface-hover)] border border-[var(--border-medium)] flex items-center justify-center text-[11px] font-medium text-[var(--text-primary)] select-none">
+                    <div className="w-7 h-7 rounded-[2px] bg-[var(--bg-surface-hover)] border border-[var(--border-medium)] flex items-center justify-center text-[11px] font-mono text-[var(--text-primary)] select-none">
                       {initials}
                     </div>
                     <span

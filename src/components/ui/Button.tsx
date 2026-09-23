@@ -10,12 +10,12 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "primary", size = "md", isLoading = false, children, disabled, ...props }, ref) => {
     const baseStyles =
-      "inline-flex items-center justify-center font-medium rounded-md transition-all duration-200 focus:outline-none focus:ring-1 focus:ring-[var(--border-focus)] focus:ring-offset-1 focus:ring-offset-[var(--bg-base)] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer select-none active:scale-[0.98] motion-reduce:transform-none";
+      "inline-flex items-center justify-center font-medium rounded-[2px] transition-all duration-200 focus:outline-none focus:ring-1 focus:ring-[var(--border-focus)] focus:ring-offset-1 focus:ring-offset-[var(--bg-base)] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer select-none active:scale-[0.99] motion-reduce:transform-none tracking-[0.01em]";
 
     const variants = {
-      primary: "bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] active:bg-[var(--accent-hover)] shadow-sm hover:shadow-[var(--accent-glow)]",
-      secondary: "bg-[var(--bg-surface)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] active:bg-[var(--bg-active)] border border-[var(--border-subtle)]",
-      outline: "border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)] hover:border-[var(--accent)]/50",
+      primary: "bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)] active:bg-[var(--accent-hover)] shadow-sm hover:shadow-[0_0_20px_rgba(196,125,90,0.18)]",
+      secondary: "bg-[var(--bg-surface)] text-[var(--text-primary)] hover:bg-[var(--bg-surface-hover)] active:bg-[var(--bg-active)] border border-[var(--border-subtle)]",
+      outline: "border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)] hover:border-[var(--border-medium)]",
       ghost: "text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)]",
       danger: "bg-[var(--error)]/90 text-white hover:bg-[var(--error)] active:opacity-80 shadow-sm",
     };
