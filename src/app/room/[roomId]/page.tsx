@@ -14,14 +14,13 @@ import { PresenceRoster } from "@/components/room/PresenceRoster";
 import { WatchSurfacePlaceholder } from "@/components/room/WatchSurfacePlaceholder";
 import { YouTubePlayerView } from "@/components/room/YouTubePlayerView";
 import { MediaControls } from "@/components/room/MediaControls";
-import { ReactionBar, AllowedEmoji } from "@/components/room/ReactionBar";
+import { AllowedEmoji } from "@/components/room/ReactionBar";
+import { ScreeningConsole } from "@/components/room/ScreeningConsole";
 import { ReactionOverlay, FloatingReaction } from "@/components/room/ReactionOverlay";
 import { ChatPanel } from "@/components/room/ChatPanel";
-import { LocalMediaControls } from "@/components/room/LocalMediaControls";
 import { LocalVideoPreview } from "@/components/room/LocalVideoPreview";
 import { RemoteMediaGrid } from "@/components/room/RemoteMediaGrid";
 import { ConnectionStatus } from "@/components/room/ConnectionStatus";
-import { FileShareWidget } from "@/components/room/FileShareWidget";
 import { useSession } from "@/hooks/useSession";
 import { useSocket } from "@/hooks/useSocket";
 import { useWebRTC } from "@/hooks/useWebRTC";
@@ -91,8 +90,14 @@ export default function RoomPage({ params }: RoomPageProps) {
   const [isLeaving, setIsLeaving] = useState(false);
 
   // Sidebar layout state
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeSidebarTab, setActiveSidebarTab] = useState<"chat" | "audience">("chat");
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth >= 1024) {
+      setIsSidebarOpen(true);
+    }
+  }, []);
 
   // Reconnection UX state
   const [isRecovering, setIsRecovering] = useState(false);
@@ -673,107 +678,172 @@ export default function RoomPage({ params }: RoomPageProps) {
             onClearMedia={handleClearMedia}
           />
 
-          {/* Reactions Row */}
-          <ReactionBar onSendReaction={handleSendReaction} />
+          {/* Unified Screening Console: Reactions, Cam/Mic toggles & P2P file share */}
+          <ScreeningConsole
+            onSendReaction={handleSendReaction}
+            isCameraOn={isWebRTCCameraOn}
+            isMicOn={isWebRTCMicOn}
+            permissionStatus={webrtcPermissionStatus}
+            mediaError={webrtcError}
+            onToggleCamera={() => toggleLocalMedia(!isWebRTCCameraOn, isWebRTCMicOn)}
+            onToggleMic={() => toggleLocalMedia(isWebRTCCameraOn, !isWebRTCMicOn)}
+            onShareFile={(name, size, mimeType) => shareFileMetadata(name, size, mimeType)}
+            receivedFiles={webrtcReceivedFiles}
+          />
 
           {/* Remote WebRTC Peer Video Streams */}
           <RemoteMediaGrid peers={webrtcRemotePeers} />
-
-          {/* Subordinate Inline Utilities: Stream toggles & P2P file share */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <LocalMediaControls
-              isCameraOn={isWebRTCCameraOn}
-              isMicOn={isWebRTCMicOn}
-              permissionStatus={webrtcPermissionStatus}
-              error={webrtcError}
-              onToggleCamera={() => toggleLocalMedia(!isWebRTCCameraOn, isWebRTCMicOn)}
-              onToggleMic={() => toggleLocalMedia(isWebRTCCameraOn, !isWebRTCMicOn)}
-            />
-
-            <FileShareWidget
-              onShareFile={(name, size, mimeType) => shareFileMetadata(name, size, mimeType)}
-              receivedFiles={webrtcReceivedFiles}
-            />
-          </div>
         </div>
 
-        {/* Right Sidebar: Chat & Audience Roster with Collapse/Expand */}
+        {/* Right Sidebar: Desktop Inline Column or Mobile Overlay Drawer */}
         {isSidebarOpen ? (
-          <div className="w-full lg:w-80 sm:w-96 shrink-0 space-y-2">
-            {/* Sidebar Tabs */}
-            <div className="flex items-center justify-between p-1 rounded-md bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs">
-              <div className="flex items-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => setActiveSidebarTab("chat")}
-                  className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs transition-colors cursor-pointer ${
-                    activeSidebarTab === "chat"
-                      ? "bg-[var(--accent)] text-white font-medium"
-                      : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-                  }`}
-                >
-                  <MessageSquare className="w-3.5 h-3.5" />
-                  <span>Chat</span>
-                  <span className="text-[10px] opacity-80">({chatMessages.length})</span>
-                </button>
+          <>
+            {/* Mobile Overlay Drawer Backdrop */}
+            <div
+              className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex justify-end lg:hidden"
+              onClick={() => setIsSidebarOpen(false)}
+            >
+              <div
+                className="w-full max-w-sm h-full bg-[#0d0c0a] p-3 flex flex-col space-y-2 border-l border-[#23201b] shadow-2xl animate-in slide-in-from-right duration-200"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center justify-between p-1 rounded-md bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs">
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setActiveSidebarTab("chat")}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs transition-colors cursor-pointer min-h-[44px] sm:min-h-[32px] ${
+                        activeSidebarTab === "chat"
+                          ? "bg-[var(--accent)] text-white font-medium"
+                          : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                      }`}
+                    >
+                      <MessageSquare className="w-4 h-4 text-white" />
+                      <span>Chat</span>
+                      <span className="text-[10px] opacity-80">({chatMessages.length})</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setActiveSidebarTab("audience")}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs transition-colors cursor-pointer min-h-[44px] sm:min-h-[32px] ${
+                        activeSidebarTab === "audience"
+                          ? "bg-[var(--accent)] text-white font-medium"
+                          : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                      }`}
+                    >
+                      <Users className="w-4 h-4 text-white" />
+                      <span>Audience</span>
+                      <span className="text-[10px] opacity-80">({presenceUsers.length})</span>
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsSidebarOpen(false)}
+                    className="text-[var(--text-muted)] hover:text-[var(--text-primary)] px-3 py-2 cursor-pointer text-xs min-h-[44px] flex items-center font-medium"
+                    title="Close drawer"
+                  >
+                    Close
+                  </button>
+                </div>
+
+                <div className="flex-1 min-h-0 overflow-hidden">
+                  {activeSidebarTab === "chat" ? (
+                    <ChatPanel
+                      messages={chatMessages}
+                      currentUserId={session?.userId}
+                      onSendMessage={handleSendMessage}
+                      isSending={isSendingChat}
+                      sendError={chatSendError}
+                      onClose={() => setIsSidebarOpen(false)}
+                    />
+                  ) : (
+                    <PresenceRoster
+                      users={presenceUsers}
+                      currentUserId={session?.userId}
+                      hostId={roomState?.hostId}
+                      maxCapacity={roomState?.maxUsers || 10}
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop Inline Sidebar Column */}
+            <div className="hidden lg:block w-80 sm:w-96 shrink-0 space-y-2">
+              <div className="flex items-center justify-between p-1 rounded-md bg-[var(--bg-surface)] border border-[var(--border-subtle)] text-xs">
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setActiveSidebarTab("chat")}
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs transition-colors cursor-pointer ${
+                      activeSidebarTab === "chat"
+                        ? "bg-[var(--accent)] text-white font-medium"
+                        : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                    }`}
+                  >
+                    <MessageSquare className="w-3.5 h-3.5 text-white" />
+                    <span>Chat</span>
+                    <span className="text-[10px] opacity-80">({chatMessages.length})</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveSidebarTab("audience")}
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs transition-colors cursor-pointer ${
+                      activeSidebarTab === "audience"
+                        ? "bg-[var(--accent)] text-white font-medium"
+                        : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                    }`}
+                  >
+                    <Users className="w-3.5 h-3.5 text-white" />
+                    <span>Audience</span>
+                    <span className="text-[10px] opacity-80">({presenceUsers.length})</span>
+                  </button>
+                </div>
 
                 <button
                   type="button"
-                  onClick={() => setActiveSidebarTab("audience")}
-                  className={`flex items-center gap-1.5 px-3 py-1 rounded text-xs transition-colors cursor-pointer ${
-                    activeSidebarTab === "audience"
-                      ? "bg-[var(--accent)] text-white font-medium"
-                      : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-                  }`}
+                  onClick={() => setIsSidebarOpen(false)}
+                  className="text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 cursor-pointer text-xs"
+                  title="Collapse sidebar"
                 >
-                  <Users className="w-3.5 h-3.5" />
-                  <span>Audience</span>
-                  <span className="text-[10px] opacity-80">({presenceUsers.length})</span>
+                  Hide
                 </button>
               </div>
 
-              {/* Collapse Sidebar Button */}
-              <button
-                type="button"
-                onClick={() => setIsSidebarOpen(false)}
-                className="text-[var(--text-muted)] hover:text-[var(--text-primary)] px-2 py-1 cursor-pointer text-xs"
-                title="Collapse sidebar"
-              >
-                Hide
-              </button>
+              {activeSidebarTab === "chat" ? (
+                <ChatPanel
+                  messages={chatMessages}
+                  currentUserId={session?.userId}
+                  onSendMessage={handleSendMessage}
+                  isSending={isSendingChat}
+                  sendError={chatSendError}
+                  onClose={() => setIsSidebarOpen(false)}
+                />
+              ) : (
+                <PresenceRoster
+                  users={presenceUsers}
+                  currentUserId={session?.userId}
+                  hostId={roomState?.hostId}
+                  maxCapacity={roomState?.maxUsers || 10}
+                />
+              )}
             </div>
-
-            {/* Tab Contents */}
-            {activeSidebarTab === "chat" ? (
-              <ChatPanel
-                messages={chatMessages}
-                currentUserId={session?.userId}
-                onSendMessage={handleSendMessage}
-                isSending={isSendingChat}
-                sendError={chatSendError}
-                onClose={() => setIsSidebarOpen(false)}
-              />
-            ) : (
-              <PresenceRoster
-                users={presenceUsers}
-                currentUserId={session?.userId}
-                hostId={roomState?.hostId}
-                maxCapacity={roomState?.maxUsers || 10}
-              />
-            )}
-          </div>
+          </>
         ) : (
           /* Reopen Sidebar Trigger when collapsed */
           <div className="fixed bottom-4 right-4 z-40">
             <button
               type="button"
               onClick={() => setIsSidebarOpen(true)}
-              className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-hover)] border border-[var(--border-subtle)] text-[var(--text-primary)] text-xs shadow-xl cursor-pointer transition-transform hover:scale-105"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#14120e] hover:bg-[#1f1c17] border border-[var(--accent)]/40 text-[var(--text-primary)] text-xs shadow-2xl cursor-pointer transition-transform hover:scale-105 min-h-[44px]"
             >
               <MessageSquare className="w-4 h-4 text-[var(--accent)]" />
-              <span>Open Chat</span>
+              <span className="font-medium">Chat</span>
               {chatMessages.length > 0 && (
-                <span className="px-1.5 py-0.2 rounded-full bg-[var(--accent)] text-white text-[10px]">
+                <span className="px-1.5 py-0.5 rounded-full bg-[var(--accent)] text-white text-[10px] font-mono">
                   {chatMessages.length}
                 </span>
               )}

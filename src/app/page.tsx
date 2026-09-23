@@ -53,14 +53,11 @@ export default function HomePage() {
               </span>
             </div>
 
-            {/* Center screen mark */}
-            <div className="text-center space-y-2">
-              <span className="font-display text-2xl sm:text-3xl text-[var(--text-primary)]/80 tracking-widest">
-                SYNCWATCH
-              </span>
-              <p className="text-xs text-[var(--text-muted)] tracking-wide">
-                Private Realtime Screening Room
-              </p>
+            {/* Center optical focal mark (dark theater + illuminated screen emitting light) */}
+            <div className="relative flex items-center justify-center">
+              <div className="w-16 h-16 rounded-full bg-[var(--accent)]/5 border border-[var(--accent)]/20 flex items-center justify-center shadow-[0_0_50px_rgba(196,125,90,0.15)]">
+                <div className="w-3 h-3 rounded-full bg-[var(--accent)]/60 animate-pulse" />
+              </div>
             </div>
 
             <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)] tracking-wider font-mono">

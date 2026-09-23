@@ -165,8 +165,8 @@ export default function JoinRoomPage() {
           required
         />
 
-        {/* Submit and Alt Link */}
-        <div className="space-y-4 pt-2">
+        {/* Submit */}
+        <div className="pt-2">
           <Button
             type="submit"
             isLoading={isSubmitting}
@@ -175,15 +175,6 @@ export default function JoinRoomPage() {
           >
             Enter room →
           </Button>
-
-          <div className="text-center">
-            <Link
-              href="/create"
-              className="text-xs text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
-            >
-              or host your own screening →
-            </Link>
-          </div>
         </div>
       </form>
     </div>

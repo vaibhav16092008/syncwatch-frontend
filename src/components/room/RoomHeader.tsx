@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { Info, LogOut, Lock, Unlock, Copy, Check, Tv, Film, Users } from "lucide-react";
 import { PublicRoomState } from "@/types/api";
 import { SocketConnectionState } from "@/types/socket";
@@ -45,27 +46,36 @@ export const RoomHeader: React.FC<RoomHeaderProps> = ({
   };
 
   return (
-    <div className="relative py-2 px-1 flex items-center justify-between gap-4 border-b border-[var(--border-subtle)]/60 text-xs">
-      {/* Left: Room Title & Ambient Connection Indicator */}
-      <div className="flex items-center gap-3 min-w-0">
-        <h1 className="font-display font-medium text-base sm:text-lg text-[var(--text-primary)] truncate max-w-[200px] sm:max-w-[400px]">
-          {roomState?.name || "Screening Room"}
-        </h1>
+    <header className="sticky top-0 z-40 bg-[var(--bg-base)]/95 border-b border-[var(--border-subtle)]/80 backdrop-blur-md transition-colors">
+      <div className="h-12 sm:h-14 px-3 sm:px-6 flex items-center justify-between gap-3 text-xs">
+        {/* Left: Brand Wordmark + Separator + Room Title & Connection Indicator */}
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <Link href="/" className="flex items-center gap-1.5 group shrink-0 min-h-[44px] flex items-center">
+            <span className="font-display font-medium text-base sm:text-lg text-[var(--text-primary)] group-hover:text-white transition-colors tracking-wide">
+              SyncWatch
+            </span>
+          </Link>
 
-        <div className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)] shrink-0">
-          <span className={`w-2 h-2 rounded-full ${getStatusColor()}`} />
-          <span className="capitalize hidden sm:inline">{connectionState}</span>
+          <span className="text-[var(--border-medium)] select-none">/</span>
+
+          <h1 className="font-display font-medium text-sm sm:text-base text-[var(--text-primary)] truncate max-w-[140px] sm:max-w-[320px]">
+            {roomState?.name || "Screening Room"}
+          </h1>
+
+          <div className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)] shrink-0">
+            <span className={`w-2 h-2 rounded-full ${getStatusColor()}`} />
+            <span className="capitalize hidden md:inline">{connectionState}</span>
+          </div>
         </div>
-      </div>
 
       {/* Right: Info Popover Toggle & Leave Action */}
       <div className="flex items-center gap-3 sm:gap-4 shrink-0">
-        {/* Info Toggle Button */}
+          {/* Info Toggle Button */}
         <div className="relative">
           <button
             type="button"
             onClick={() => setShowInfoPopover(!showInfoPopover)}
-            className="flex items-center gap-1.5 py-1 px-2.5 rounded-md bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-hover)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 py-1.5 px-2.5 min-h-[44px] rounded-md bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-hover)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
             title="Room details"
             aria-label="Room details"
           >
@@ -83,7 +93,7 @@ export const RoomHeader: React.FC<RoomHeaderProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowInfoPopover(false)}
-                  className="text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer text-xs"
+                  className="text-[var(--text-muted)] hover:text-[var(--text-primary)] cursor-pointer text-xs p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
                 >
                   ✕
                 </button>
@@ -101,7 +111,7 @@ export const RoomHeader: React.FC<RoomHeaderProps> = ({
                   <button
                     type="button"
                     onClick={handleCopyRoomCode}
-                    className="p-1 text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors cursor-pointer"
+                    className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors cursor-pointer"
                     title="Copy code"
                   >
                     {copiedCode ? (
@@ -162,12 +172,13 @@ export const RoomHeader: React.FC<RoomHeaderProps> = ({
           type="button"
           onClick={onLeaveRoom}
           disabled={isLeaving}
-          className="text-xs text-[var(--text-muted)] hover:text-[var(--error)] transition-colors py-1 cursor-pointer flex items-center gap-1"
+          className="text-xs text-[var(--text-muted)] hover:text-[var(--error)] transition-colors px-2 py-1.5 min-h-[44px] cursor-pointer flex items-center gap-1"
         >
           <LogOut className="w-3.5 h-3.5" />
           <span>{isLeaving ? "Leaving..." : "Leave"}</span>
         </button>
       </div>
     </div>
-  );
+  </header>
+);
 };

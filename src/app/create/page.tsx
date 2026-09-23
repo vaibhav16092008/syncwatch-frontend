@@ -166,15 +166,15 @@ export default function CreateRoomPage() {
               onClick={() => !isSubmitting && setMode("youtube")}
               className={`p-4 rounded-lg cursor-pointer transition-all duration-200 border flex flex-col justify-between min-h-[120px] ${
                 mode === "youtube"
-                  ? "bg-[var(--bg-surface)] border-[var(--accent)] shadow-sm shadow-[var(--accent-glow)]"
+                  ? "bg-[#14120e] border-[var(--accent)] text-[var(--text-primary)]"
                   : "bg-[var(--bg-surface)]/60 border-[var(--border-subtle)] opacity-70 hover:opacity-100 hover:border-[var(--border-medium)]"
               } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               <div className="flex items-center justify-between">
                 <Tv className="w-5 h-5 text-[var(--accent)]" />
                 {mode === "youtube" && (
-                  <span className="w-4 h-4 rounded-full bg-[var(--accent)] text-white flex items-center justify-center">
-                    <Check className="w-3 h-3 stroke-[2.5]" />
+                  <span className="text-[10px] font-mono tracking-wider text-[var(--accent)] bg-[var(--accent)]/10 px-2 py-0.5 rounded border border-[var(--accent)]/30 uppercase">
+                    Selected
                   </span>
                 )}
               </div>
@@ -191,15 +191,15 @@ export default function CreateRoomPage() {
               onClick={() => !isSubmitting && setMode("local")}
               className={`p-4 rounded-lg cursor-pointer transition-all duration-200 border flex flex-col justify-between min-h-[120px] ${
                 mode === "local"
-                  ? "bg-[var(--bg-surface)] border-[var(--accent)] shadow-sm shadow-[var(--accent-glow)]"
+                  ? "bg-[#14120e] border-[var(--accent)] text-[var(--text-primary)]"
                   : "bg-[var(--bg-surface)]/60 border-[var(--border-subtle)] opacity-70 hover:opacity-100 hover:border-[var(--border-medium)]"
               } ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               <div className="flex items-center justify-between">
-                <Film className="w-5 h-5 text-[var(--accent-secondary)]" />
+                <Film className="w-5 h-5 text-[var(--accent)]" />
                 {mode === "local" && (
-                  <span className="w-4 h-4 rounded-full bg-[var(--accent)] text-white flex items-center justify-center">
-                    <Check className="w-3 h-3 stroke-[2.5]" />
+                  <span className="text-[10px] font-mono tracking-wider text-[var(--accent)] bg-[var(--accent)]/10 px-2 py-0.5 rounded border border-[var(--accent)]/30 uppercase">
+                    Selected
                   </span>
                 )}
               </div>
