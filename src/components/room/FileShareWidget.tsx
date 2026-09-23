@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { FileUp, FileText, Download } from "lucide-react";
-import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { WebRTCFileMetadata } from "@/types/api";
 
@@ -40,13 +39,11 @@ export const FileShareWidget: React.FC<FileShareWidgetProps> = ({
   };
 
   return (
-    <Card className="p-3.5 border-[var(--border-subtle)] bg-[var(--bg-elevated)] space-y-3 shadow-lg">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <FileUp className="w-4 h-4 text-indigo-400" />
-          <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
-            Local File Offer
-          </h4>
+    <div className="p-3 rounded-lg bg-[var(--bg-surface)]/80 border border-[var(--border-subtle)] space-y-2.5 text-xs">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 text-[var(--text-secondary)]">
+          <FileUp className="w-3.5 h-3.5 text-[var(--accent)]" />
+          <span className="font-medium">P2P File Offer</span>
         </div>
 
         <label className="cursor-pointer">
@@ -62,7 +59,7 @@ export const FileShareWidget: React.FC<FileShareWidgetProps> = ({
             size="sm"
             isLoading={isSharing}
             disabled={disabled || isSharing}
-            className="pointer-events-none"
+            className="pointer-events-none text-xs px-2.5 py-1"
           >
             <span>Announce File</span>
           </Button>
@@ -70,20 +67,20 @@ export const FileShareWidget: React.FC<FileShareWidgetProps> = ({
       </div>
 
       {receivedFiles.length > 0 && (
-        <div className="space-y-1.5 pt-2.5 border-t border-[var(--border-subtle)]">
-          <span className="text-[11px] font-semibold text-[var(--text-muted)]">
-            Shared Files ({receivedFiles.length}):
+        <div className="space-y-1.5 pt-2 border-t border-[var(--border-subtle)]">
+          <span className="text-[11px] text-[var(--text-muted)]">
+            Available Files ({receivedFiles.length}):
           </span>
-          <div className="max-h-28 overflow-y-auto space-y-1">
+          <div className="max-h-24 overflow-y-auto space-y-1">
             {receivedFiles.map((file) => (
               <div
                 key={file.fileId}
-                className="p-2 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex items-center justify-between text-xs"
+                className="p-1.5 rounded bg-[var(--bg-base)] border border-[var(--border-subtle)] flex items-center justify-between text-xs"
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  <FileText className="w-4 h-4 text-[var(--text-muted)] shrink-0" />
+                  <FileText className="w-3.5 h-3.5 text-[var(--text-muted)] shrink-0" />
                   <div className="truncate">
-                    <p className="font-semibold text-[var(--text-primary)] truncate">{file.name}</p>
+                    <p className="font-medium text-[var(--text-primary)] truncate">{file.name}</p>
                     <p className="text-[10px] text-[var(--text-muted)]">
                       {file.senderDisplayName} • {formatFileSize(file.size)}
                     </p>
@@ -92,8 +89,8 @@ export const FileShareWidget: React.FC<FileShareWidgetProps> = ({
                 <Button
                   variant="ghost"
                   size="sm"
-                  title="File offer metadata announced"
-                  className="text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                  title="File metadata announced"
+                  className="text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 h-auto"
                 >
                   <Download className="w-3.5 h-3.5" />
                 </Button>
@@ -102,6 +99,6 @@ export const FileShareWidget: React.FC<FileShareWidgetProps> = ({
           </div>
         </div>
       )}
-    </Card>
+    </div>
   );
 };

@@ -1,11 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Play, Pause, Trash2, Gauge, ShieldAlert, Link as LinkIcon, FastForward, Rewind } from "lucide-react";
-import { Card } from "@/components/ui/Card";
+import { Play, Pause, Trash2, Gauge, Shield, Link as LinkIcon, FastForward, Rewind } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { Badge } from "@/components/ui/Badge";
 import { extractYouTubeId } from "@/utils/youtube";
 import { MediaState } from "@/types/api";
 
@@ -48,7 +45,7 @@ export const MediaControls: React.FC<MediaControlsProps> = ({
 
     const extractedId = extractYouTubeId(mediaInput);
     if (!extractedId) {
-      setInputError("Invalid YouTube URL or Video ID. Please check your link.");
+      setInputError("Invalid YouTube URL or ID.");
       return;
     }
 
@@ -56,71 +53,81 @@ export const MediaControls: React.FC<MediaControlsProps> = ({
     setMediaInput("");
   };
 
-  // If Member (Read-only view)
+  // Member View (Quiet, dignified status strip)
   if (!isHost) {
     return (
-      <Card className="p-3.5 sm:p-4 border-[var(--border-subtle)] bg-[var(--bg-elevated)] flex flex-wrap items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-2">
-          <ShieldAlert className="w-4 h-4 text-indigo-400 shrink-0" />
-          <span className="text-[var(--text-secondary)] font-medium">Host Controlled Playback</span>
+      <div className="p-3 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="flex items-center gap-2 text-[var(--text-secondary)]">
+          <Shield className="w-3.5 h-3.5 text-[var(--accent)]" />
+          <span>Host Controlled Playback</span>
         </div>
-        <div className="flex items-center gap-2">
-          <Badge variant={isPlaying ? "success" : "neutral"} className="text-[11px] uppercase">
-            {isPlaying ? "Playing" : "Paused"}
-          </Badge>
-          <Badge variant="neutral" className="text-[11px]">
-            {currentRate}x Speed
-          </Badge>
+        <div className="flex items-center gap-2 text-[var(--text-muted)] text-[11px]">
+          <span className={`capitalize font-medium ${isPlaying ? "text-emerald-400" : "text-amber-400"}`}>
+            {isPlaying ? "● Playing" : "⏸ Paused"}
+          </span>
+          <span>•</span>
+          <span>{currentRate}x speed</span>
         </div>
-      </Card>
+      </div>
     );
   }
 
-  // Host Control View
+  // Host View (Integrated control strip)
   return (
-    <Card className="space-y-4 border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-4 sm:p-5 shadow-xl">
+    <div className="p-3 sm:p-3.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] space-y-3 shadow-sm">
       {/* Set Media Form */}
-      <form onSubmit={handleSetMediaSubmit} className="space-y-2">
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-start gap-2.5">
-          <div className="flex-1 min-w-0">
-            <Input
-              placeholder="Paste YouTube URL or Video ID (e.g. dQw4w9WgXcQ)"
-              value={mediaInput}
-              onChange={(e) => {
-                setMediaInput(e.target.value);
-                if (inputError) setInputError(null);
-              }}
-              error={inputError || undefined}
-              icon={<LinkIcon className="w-4 h-4" />}
-              disabled={isProcessing}
-            />
+      <form onSubmit={handleSetMediaSubmit} className="flex items-center gap-2">
+        <div className="relative flex-1 min-w-0">
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none">
+            <LinkIcon className="w-3.5 h-3.5" />
           </div>
-          <Button type="submit" size="md" isLoading={isProcessing} disabled={!mediaInput.trim()} className="shrink-0 sm:self-start">
-            Set Video
-          </Button>
+          <input
+            type="text"
+            placeholder="Paste YouTube link or video ID..."
+            value={mediaInput}
+            onChange={(e) => {
+              setMediaInput(e.target.value);
+              if (inputError) setInputError(null);
+            }}
+            disabled={isProcessing}
+            className="w-full rounded-md bg-[var(--bg-base)] border border-[var(--border-subtle)] pl-8 pr-3 py-1.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--border-focus)]"
+          />
         </div>
+        <Button
+          type="submit"
+          size="sm"
+          isLoading={isProcessing}
+          disabled={!mediaInput.trim() || isProcessing}
+          className="shrink-0 text-xs px-3 py-1.5"
+        >
+          Load
+        </Button>
       </form>
 
-      {/* Playback Controls (Active when Media is Loaded) */}
+      {inputError && (
+        <p className="text-[11px] text-rose-400">{inputError}</p>
+      )}
+
+      {/* Playback Controls Strip (Active when media is loaded) */}
       {hasMedia && (
-        <div className="pt-3 border-t border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-4">
-          {/* Play/Pause & Skip Controls */}
-          <div className="flex items-center gap-2 flex-wrap">
+        <div className="pt-2 border-t border-[var(--border-subtle)]/70 flex flex-wrap items-center justify-between gap-3">
+          {/* Play/Pause & Skip */}
+          <div className="flex items-center gap-1.5">
             <Button
               variant={isPlaying ? "secondary" : "primary"}
               size="sm"
               onClick={isPlaying ? onPause : onPlay}
               disabled={isProcessing}
-              className="min-w-[90px]"
+              className="px-3 text-xs"
             >
               {isPlaying ? (
                 <>
-                  <Pause className="w-4 h-4" />
+                  <Pause className="w-3.5 h-3.5" />
                   <span>Pause</span>
                 </>
               ) : (
                 <>
-                  <Play className="w-4 h-4 fill-current" />
+                  <Play className="w-3.5 h-3.5 fill-current" />
                   <span>Play</span>
                 </>
               )}
@@ -132,8 +139,9 @@ export const MediaControls: React.FC<MediaControlsProps> = ({
               onClick={() => onSeek(Math.max(0, currentPosition - 10))}
               disabled={isProcessing}
               title="Seek -10s"
+              className="px-2 text-xs"
             >
-              <Rewind className="w-3.5 h-3.5" />
+              <Rewind className="w-3 h-3" />
               <span>-10s</span>
             </Button>
 
@@ -143,46 +151,45 @@ export const MediaControls: React.FC<MediaControlsProps> = ({
               onClick={() => onSeek(currentPosition + 10)}
               disabled={isProcessing}
               title="Seek +10s"
+              className="px-2 text-xs"
             >
-              <FastForward className="w-3.5 h-3.5" />
+              <FastForward className="w-3 h-3" />
               <span>+10s</span>
             </Button>
           </div>
 
-          {/* Speed Selector & Clear Media */}
-          <div className="flex items-center gap-3">
-            {/* Speed Selector */}
-            <div className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)]">
-              <Gauge className="w-4 h-4 text-indigo-400 shrink-0" />
+          {/* Rate & Clear */}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 text-xs text-[var(--text-secondary)]">
+              <Gauge className="w-3.5 h-3.5 text-[var(--text-muted)]" />
               <select
                 value={currentRate}
                 onChange={(e) => onRate(parseFloat(e.target.value))}
                 disabled={isProcessing}
-                className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-lg px-2.5 py-1 text-xs font-semibold text-[var(--text-primary)] focus:outline-none focus:border-[var(--border-focus)] cursor-pointer"
+                className="bg-[var(--bg-base)] border border-[var(--border-subtle)] rounded px-2 py-1 text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--border-focus)] cursor-pointer"
               >
                 {ALLOWED_RATES.map((rate) => (
                   <option key={rate} value={rate}>
-                    {rate}x Speed
+                    {rate}x
                   </option>
                 ))}
               </select>
             </div>
 
-            {/* Clear Media */}
             <Button
               variant="ghost"
               size="sm"
               onClick={onClearMedia}
               disabled={isProcessing}
-              className="text-rose-400 hover:text-rose-300 hover:bg-rose-500/10"
-              title="Clear media from room"
+              className="text-[var(--text-muted)] hover:text-rose-400 text-xs px-2"
+              title="Clear media"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Clear</span>
             </Button>
           </div>
         </div>
       )}
-    </Card>
+    </div>
   );
 };

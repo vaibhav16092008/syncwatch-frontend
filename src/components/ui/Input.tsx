@@ -15,7 +15,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full space-y-1.5">
         {label && (
-          <label htmlFor={inputId} className="block text-xs font-semibold text-[var(--text-secondary)] tracking-wide uppercase">
+          <label htmlFor={inputId} className="block text-xs sm:text-sm font-medium text-[var(--text-secondary)]">
             {label}
           </label>
         )}
@@ -29,9 +29,9 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             id={inputId}
             className={cn(
-              "w-full rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] py-2.5 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-all duration-200 focus:border-[var(--border-focus)] focus:bg-[var(--bg-hover)] focus:outline-none focus:ring-1 focus:ring-[var(--border-focus)] disabled:opacity-50 disabled:cursor-not-allowed",
+              "w-full rounded-md bg-[var(--bg-surface)] border border-[var(--border-subtle)] py-2.5 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] transition-all duration-200 focus:border-[var(--border-focus)] focus:bg-[var(--bg-surface-hover)] focus:outline-none focus:ring-1 focus:ring-[var(--border-focus)]/50 disabled:opacity-50 disabled:cursor-not-allowed",
               icon ? "pl-10 pr-3.5" : "px-3.5",
-              error && "border-[var(--error)] focus:border-[var(--error)] focus:ring-[var(--error)]",
+              error && "border-[var(--error)] focus:border-[var(--error)] focus:ring-[var(--error)]/50",
               className
             )}
             {...props}

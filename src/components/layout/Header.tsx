@@ -2,70 +2,38 @@
 
 import React from "react";
 import Link from "next/link";
-import { PlayCircle, PlusCircle, LogIn } from "lucide-react";
-import { useSocket } from "@/hooks/useSocket";
-import { Badge } from "@/components/ui/Badge";
+import { usePathname } from "next/navigation";
 
 export const Header: React.FC = () => {
-  const { connectionState } = useSocket();
-
-  const getStatusBadgeVariant = () => {
-    switch (connectionState) {
-      case "connected":
-        return "success";
-      case "connecting":
-        return "warning";
-      case "error":
-        return "error";
-      default:
-        return "neutral";
-    }
-  };
+  const pathname = usePathname();
+  
+  // Suppress global navigation inside active screening room to avoid double headers
+  if (pathname.startsWith("/room/")) {
+    return null;
+  }
 
   return (
-    <header className="sticky top-0 z-40 bg-[var(--bg-base)]/85 border-b border-[var(--border-subtle)] backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5 group shrink-0">
-          <div className="p-1.5 rounded-lg bg-[var(--accent)] text-white group-hover:bg-[var(--accent-hover)] transition-colors shadow-sm">
-            <PlayCircle className="w-5 h-5" />
-          </div>
-          <span className="font-bold text-lg text-[var(--text-primary)] tracking-tight">SyncWatch</span>
+    <header className="sticky top-0 z-40 bg-[var(--bg-base)]/90 border-b border-[var(--border-subtle)]/80 backdrop-blur-md transition-colors">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2 group shrink-0 min-h-[44px]">
+          <span className="font-display font-medium text-lg sm:text-xl text-[var(--text-primary)] group-hover:text-white transition-colors tracking-wide">
+            SyncWatch
+          </span>
         </Link>
 
-        <nav className="flex items-center gap-2 sm:gap-4">
+        <nav className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm font-medium">
           <Link
             href="/create"
-            className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] px-2.5 sm:px-3 py-1.5 rounded-lg hover:bg-[var(--bg-surface)] transition-colors"
-            title="Create Room"
+            className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors px-3 py-2.5 min-h-[44px] flex items-center"
           >
-            <PlusCircle className="w-4 h-4 shrink-0" />
-            <span className="hidden sm:inline">Create Room</span>
+            Host
           </Link>
           <Link
             href="/join"
-            className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] px-2.5 sm:px-3 py-1.5 rounded-lg hover:bg-[var(--bg-surface)] transition-colors"
-            title="Join Room"
+            className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors px-3 py-2.5 min-h-[44px] flex items-center"
           >
-            <LogIn className="w-4 h-4 shrink-0" />
-            <span className="hidden sm:inline">Join Room</span>
+            Join
           </Link>
-
-          <div className="pl-2 border-l border-[var(--border-subtle)]">
-            <Badge variant={getStatusBadgeVariant()} className="text-[11px] gap-1.5 py-1 px-2 sm:px-2.5">
-              <span
-                className={`w-1.5 h-1.5 rounded-full ${
-                  connectionState === "connected"
-                    ? "bg-emerald-400"
-                    : connectionState === "connecting"
-                    ? "bg-amber-400 animate-pulse"
-                    : connectionState === "error"
-                    ? "bg-rose-400"
-                    : "bg-slate-400"
-                }`}
-              />
-              <span className="capitalize hidden sm:inline">{connectionState}</span>
-            </Badge>
-          </div>
         </nav>
       </div>
     </header>
